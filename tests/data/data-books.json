@@ -1,0 +1,61 @@
+{
+  "catalogue": [
+    {
+      "title": "Halting State",
+      "author": "Charles Stross",
+      "publicationDate": "2011-07-11",
+      "isbn10": "0441016073",
+      "isbn13": "9780441016075",
+      "format": "paperback"
+    },
+    {
+      "title": "Embassytown",
+      "author": "China Mieville",
+      "publicationDate": "2012-01-31",
+      "isbn10": "0345524500",
+      "isbn13": "9780345524508",
+      "format": "paperback"
+    },
+        {
+      "title": "The God Makers",
+      "author": "Frank Herbert",
+      "publicationDate": "1972-11-01",
+      "isbn10": "0399110062",
+      "isbn13": "9780399110061",
+      "format": "hardback"
+    },
+        {
+      "title": "A Fire Upon the Deep",
+      "author": "Vernor Vinge",
+      "publicationDate": "2010-09-01",
+      "isbn10": "0812515285",
+      "isbn13": "9780812515282",
+      "format": "paperback"
+    },
+       {
+      "title": "Sentenced to Prism",
+      "author": "Alan Dean Foster",
+      "publicationDate": "1988-02-01",
+      "isbn10": "0450421376",
+      "isbn13": "9780450421372",
+      "format": "paperback"
+    },
+       {
+      "title": "The Algebraist",
+      "author": "Iain M. Banks",
+      "publicationDate": "2009-12-16",
+      "isbn10": "1841492299",
+      "isbn13": "9781841492292",
+      "format": "paperback"
+    },
+       {
+      "title": "Vast",
+      "author": "Linda Nagata",
+      "publicationDate": "2011-08-29",
+      "isbn10": "1937197042",
+      "isbn13": "9781937197049",
+      "format": "paperback"
+    }
+
+  ]
+}
