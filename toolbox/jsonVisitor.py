@@ -44,25 +44,6 @@ def json_visit(data, process_node=lambda x: x):
     aname = '*'
     aname_list = [aname]
     to_visit = deque([Node('', [], __node_type(data), data)])
-    while to_visit:
-        node = to_visit.popleft()
-        yield process_node(node) if process_node else node
-
-        # Process children (if any)
-        # if isinstance(node.dataType, dict):
-        if type(node.value) is dict:
-            children = [Node(n, node.names + [n], __node_type(v), v) for n, v in (dict)(node.value).items()]
-            to_visit.extendleft(reversed(children))
-        elif type(node.value) is list:
-            children = [Node(aname, node.names + aname_list, __node_type(v), v) for v in iter(node.value)]
-            to_visit.extendleft(reversed(children))
-
-
-# _____________________________________________________________________________
-def json_visit_org(data, process_node=lambda x: x):
-    aname = '*'
-    aname_list = [aname]
-    to_visit = deque([Node('', [], __node_type(data), data)])
     while True:
         node = to_visit.popleft()
         yield process_node(node) if process_node else node
