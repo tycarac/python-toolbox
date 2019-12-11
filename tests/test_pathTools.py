@@ -21,21 +21,27 @@ def test_sanitize_filename():
 # _____________________________________________________________________________
 def test_is_parent_path():
     pos_tests = [
-        [Path('c:\\atemp'), Path('c:\\atemp'), True],
-        [Path('c:\\atemp'), Path('c:\\atemp\\abcd'), True],
-        [Path('c:\\abcd\\abcd'), Path('c:\\temp\\abcd'), False]
+        [Path('c:\\atemp'), Path('c:\\atemp')],
+        [Path('c:\\atemp'), Path('c:\\atemp\\abcd')]
+    ]
+    neg_tests = [
+        [Path('c:\\abcd\\abcd'), Path('c:\\temp\\abcd')]
     ]
 
     for test in pos_tests:
-        parent, path, result = test
-        assert pathTools.is_parent(parent, path) == result
+        parent, path = test
+        assert pathTools.is_parent(parent, path)
+    for test in neg_tests:
+        parent, path = test
+        assert not pathTools.is_parent(parent, path)
 
 
 # _____________________________________________________________________________
 def test_join_url_path():
-    assert pathTools.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def/'
-    assert pathTools.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi/'
-    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi/'
+    assert pathTools.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def'
+    assert pathTools.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi'
+    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi'
+    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi'
 
 
 # _____________________________________________________________________________

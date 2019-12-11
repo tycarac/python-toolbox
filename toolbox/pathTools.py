@@ -50,7 +50,7 @@ def join_url_path(url, *paths):
 
     Does not validate URL
     """
-    return '%s/%s/' % (url.strip().strip('/'), '/'.join(map(lambda x: x.strip().strip('/'), paths)))
+    return '%s/%s' % (url.strip().strip('/'), '/'.join(map(lambda x: x.strip().strip('/'), paths)))
 
 
 # _____________________________________________________________________________
