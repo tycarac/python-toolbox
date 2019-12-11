@@ -15,7 +15,7 @@ def test_sanitize_filename():
 
     for test in pos_tests:
         expected, given = test
-        assert pathTools.sanitize_filename(given) == expected
+        assert expected == pathTools.sanitize_filename(given)
 
 
 # _____________________________________________________________________________
@@ -38,20 +38,29 @@ def test_is_parent_path():
 
 # _____________________________________________________________________________
 def test_join_url_path():
-    assert pathTools.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def'
-    assert pathTools.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi'
-    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi'
-    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi'
+    def func(url, args):
+        return pathTools.join_url_path(url, *args)
+
+    pos_tests = [
+        ['https://abc.com/def', ['https://abc.com/', '/def/']],
+        ['https://abc.com/def/ghi', ['https://abc.com/', '/def/', '/ghi/']],
+        ['abc.com/def/ghi', ['abc.com/', '/def/', '/ghi/']]
+    ]
+
+    for test in pos_tests:
+        expected, given = test
+        assert expected == func(given[0], given[1:])
 
 
 # _____________________________________________________________________________
 def test_urlpath_to_pathname():
     pos_tests = [
         [r'abc', '//abc/'],
-        [r'abc\def\ghi', '/abc/def/ghi/']
+        [r'abc\def\ghi', '/abc/def/ghi/'],
+        [r'ec2', '/ ec2 /?id = docs_gateway']
     ]
 
     for test in pos_tests:
         expected, given = test
-        assert pathTools.urlpath_to_pathname(given) == expected
+        assert expected == pathTools.urlpath_to_pathname(given)
 
