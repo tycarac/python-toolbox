@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
 import unicodedata
+from urllib import parse
 
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-WINDOWS_INVALID_FILENAME_CHARS = ['\\', '/', ':', '*', '|', '?', '>', '<', '"']
+WINDOWS_FOLDER_SEPARATOR_CHARS = ['\\', '/']
+WINDOWS_INVALID_CHARS = [':', '*', '|', '?', '>', '<', '"']
+WINDOWS_INVALID_FILENAME_CHARS = WINDOWS_INVALID_CHARS + WINDOWS_FOLDER_SEPARATOR_CHARS
 DASH_CHARS = ['\u2012', '\u2013', '\u2014', '\u2015', '\u2053']
-REPLACE_CHARS = WINDOWS_INVALID_FILENAME_CHARS + DASH_CHARS
+FILENAME_REPLACE_CHARS = WINDOWS_INVALID_FILENAME_CHARS + DASH_CHARS
+PATHNAME_REPLACE_CHARS = WINDOWS_INVALID_CHARS + DASH_CHARS
 
 
 # _____________________________________________________________________________
@@ -46,26 +50,47 @@ def join_url_path(url, *paths):
 
     Does not validate URL
     """
-    return url.strip().strip('/') + '/' + '/'.join(map(lambda x: x.strip().strip('/'), paths))
+    return '%s/%s/' % (url.strip().strip('/'), '/'.join(map(lambda x: x.strip().strip('/'), paths)))
 
 
 # _____________________________________________________________________________
 def sanitize_filename(filename: str):
-    """Returns sanitized filename using ASCII character set
-    :param filename: string without file path
-    :return: sanitized filemane
+    """Returns MS-Windows sanitized filename using ASCII character set
+    :param filename: string
+    :return: sanitized filename
 
     Leading/trailing/multiple whitespaces removed.
     Unicode dashes converted to ASCII dash but other unicode characters removed.
     No checks on None, leading/trailing dots, or filename length.
     """
-    filename = ' '.join(filename.split())
-    for ch in REPLACE_CHARS:
+    filename = ' '.join(parse.unquote(filename).split())
+    for ch in FILENAME_REPLACE_CHARS:
         if ch in filename:
             filename = filename.replace(ch, '-')
     if not filename.isascii():
         filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode('ASCII')
     if len(filename) < 1:
         raise ValueError('empty string')
-    else:
-        return filename
+
+    return filename
+
+
+# _____________________________________________________________________________
+def urlpath_to_pathname(url: str):
+    """Returns MS-Windows sanitized filepath from a URL
+    :param url: string
+    :return: sanitized filename
+
+    RFC 8089: The "file" URI Scheme
+    """
+    pathname = ' '.join(parse.unquote(url).strip().split())
+    pathname = '\\'.join(pathname.strip('/').split('/'))
+    for ch in PATHNAME_REPLACE_CHARS:
+        if ch in pathname:
+            pathname = pathname.replace(ch, '-')
+    if not pathname.isascii():
+        pathname = unicodedata.normalize('NFKD', pathname).encode('ASCII', 'ignore').decode('ASCII')
+    if len(pathname) < 1:
+        raise ValueError('empty string')
+
+    return pathname

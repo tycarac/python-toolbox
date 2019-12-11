@@ -1,32 +1,51 @@
 import logging
 from pathlib import Path
-from toolbox import paths as p
+from toolbox import paths
 
 logger = logging.getLogger(__name__)
 
 
 # _____________________________________________________________________________
-def test_path_unicode():
-    given = 'AWS Well-Architected Framework \u2013 Operational Excellence Pillar'
-    expected = 'AWS Well-Architected Framework - Operational Excellence Pillar'
-    assert p.sanitize_filename(given) == expected
+def test_sanitize_filename():
+    pos_tests = [
+        ['WordPress- Best Practices', 'WordPress: Best Practices'],
+        ['AWS - Operational Excellence Pillar', 'AWS \u2013 Operational Excellence Pillar'],
+        ['AWS Optimizing ASP.NET with C++.pdf', 'AWS Optimizing ASP.NET with C++.pdf']
+    ]
 
-
-# _____________________________________________________________________________
-def test_path_bad_characters():
-    given = 'WordPress: Best Practices on AWS'
-    expected = 'WordPress- Best Practices on AWS'
-    assert p.sanitize_filename(given) == expected
+    for test in pos_tests:
+        expected, given = test
+        assert paths.sanitize_filename(given) == expected
 
 
 # _____________________________________________________________________________
 def test_is_parent_path():
-    tests = [
+    pos_tests = [
         [Path('c:\\atemp'), Path('c:\\atemp'), True],
         [Path('c:\\atemp'), Path('c:\\atemp\\abcd'), True],
         [Path('c:\\abcd\\abcd'), Path('c:\\temp\\abcd'), False]
     ]
 
-    for test in tests:
-        p1, p2, result = test
-        assert p.is_parent(p1, p2) == result
+    for test in pos_tests:
+        parent, path, result = test
+        assert paths.is_parent(parent, path) == result
+
+
+# _____________________________________________________________________________
+def test_join_url_path():
+    assert paths.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def/'
+    assert paths.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi/'
+    assert paths.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi/'
+
+
+# _____________________________________________________________________________
+def test_urlpath_to_pathname():
+    pos_tests = [
+        [r'abc', '//abc/'],
+        [r'abc\def\ghi', '/abc/def/ghi/']
+    ]
+
+    for test in pos_tests:
+        expected, given = test
+        assert paths.urlpath_to_pathname(given) == expected
+
