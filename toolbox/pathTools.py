@@ -1,15 +1,17 @@
 import os
 from pathlib import Path
+import string
 import unicodedata
 from urllib import parse
 
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-WINDOWS_FOLDER_SEPARATOR_CHARS = ['\\', '/']
-WINDOWS_INVALID_CHARS = [':', '*', '|', '?', '>', '<', '"']
-WINDOWS_INVALID_FILENAME_CHARS = WINDOWS_INVALID_CHARS + WINDOWS_FOLDER_SEPARATOR_CHARS
-DASH_CHARS = ['\u2012', '\u2013', '\u2014', '\u2015', '\u2053']
-FILENAME_REPLACE_CHARS = WINDOWS_INVALID_FILENAME_CHARS + DASH_CHARS
-PATHNAME_REPLACE_CHARS = WINDOWS_INVALID_CHARS + DASH_CHARS
+_FOLDER_SEPARATOR_CHARS = ['\\', '/']
+_DASH_CHARS = ['\u2012', '\u2013', '\u2014', '\u2015', '\u2053']
+_WINDOWS_INVALID_CHARS = [':', '*', '|', '?', '>', '<', '"']
+_WINDOWS_INVALID_FILENAME_CHARS = _WINDOWS_INVALID_CHARS + _FOLDER_SEPARATOR_CHARS
+_FILENAME_REPLACE_CHARS = _WINDOWS_INVALID_FILENAME_CHARS + _DASH_CHARS
+_PATHNAME_REPLACE_CHARS = _WINDOWS_INVALID_CHARS + _DASH_CHARS
+_URL_STRIP_CHARS = string.whitespace + '/'
 
 
 # _____________________________________________________________________________
@@ -50,7 +52,7 @@ def join_url_path(url, *paths):
 
     Does not validate URL
     """
-    return '%s/%s' % (url.strip().strip('/'), '/'.join(map(lambda x: x.strip().strip('/'), paths)))
+    return '%s/%s' % (url.strip(_URL_STRIP_CHARS), '/'.join(map(lambda x: x.strip(_URL_STRIP_CHARS), paths)))
 
 
 # _____________________________________________________________________________
@@ -64,7 +66,7 @@ def sanitize_filename(filename: str):
     No checks on None, leading/trailing dots, or filename length.
     """
     filename = ' '.join(parse.unquote(filename).split())
-    for ch in FILENAME_REPLACE_CHARS:
+    for ch in _FILENAME_REPLACE_CHARS:
         if ch in filename:
             filename = filename.replace(ch, '-')
     if not filename.isascii():
@@ -83,9 +85,17 @@ def urlpath_to_pathname(url: str):
 
     RFC 8089: The "file" URI Scheme
     """
-    pathname = ' '.join(parse.unquote(url).strip().split())
-    pathname = '\\'.join(pathname.strip('/').split('/'))
-    for ch in PATHNAME_REPLACE_CHARS:
+    urlp = parse.urlparse(' '.join(parse.unquote(url).strip().split()))
+    path = urlp.path.strip(_URL_STRIP_CHARS)
+
+    if path:
+        pathname = (urlp.hostname + '\\' + path if urlp.hostname else path).replace('/', '\\')
+    elif urlp.hostname:
+        pathname = urlp.hostname
+    else:
+        pathname = ''
+
+    for ch in _PATHNAME_REPLACE_CHARS:
         if ch in pathname:
             pathname = pathname.replace(ch, '-')
     if not pathname.isascii():
