@@ -8,7 +8,6 @@ JSON Specification: https://tools.ietf.org/html/rfc8259
 from dataclasses import dataclass
 from collections import deque
 from typing import List
-from itertools import repeat
 
 _JSON_TYPES = {
     # structure
@@ -25,7 +24,7 @@ _JSON_TYPES = {
 }
 
 
-@dataclass(repr=True)
+@dataclass
 class Node:
     __slots__ = ['name', 'names', 'type', 'value']
     name: str
@@ -41,18 +40,18 @@ def __node_type(value):
 
 # _____________________________________________________________________________
 def json_visit(data, process_node=lambda x: x):
-    aname = '*'
-    aname_list = [aname]
+    array_name = '*'
+    array_name_list = [array_name]
+
     to_visit = deque([Node('', [], __node_type(data), data)])
     while to_visit:
         node = to_visit.popleft()
         yield process_node(node) if process_node else node
 
         # Process children (if any)
-        # if isinstance(node.dataType, dict):
         if type(node.value) is dict:
             children = [Node(n, node.names + [n], __node_type(v), v) for n, v in (dict)(node.value).items()]
             to_visit.extendleft(reversed(children))
         elif type(node.value) is list:
-            children = [Node(aname, node.names + aname_list, __node_type(v), v) for v in iter(node.value)]
+            children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in iter(node.value)]
             to_visit.extendleft(reversed(children))
