@@ -6,10 +6,10 @@
 **/*.py[cd]
 **/*$py.class
 
-# Files
+# Non-source files
 **/*.log
 **/*.bak
-**/*.bak.py
+**/*.bak.*
 **/*.tmp
 
 # Processing paths
