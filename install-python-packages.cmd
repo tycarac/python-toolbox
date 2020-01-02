@@ -3,11 +3,11 @@ setlocal
 del /s/q *.bak >nul 2>&1
 
 set logfile=install-python-packages.log
-del /q %logfile%
+del /q %logfile% >nul 2>&1
 
 REM ___________________________________________________________________________
 REM Create virtural environment
-if not exist [.\.env] (
+if not exist ".\.env" (
 python -m venv ".\.env"
 )
 call .env\Scripts\activate
@@ -38,8 +38,12 @@ REM ___________________________________________________________________________
 REM Install/Update packeages from requirements
 if not exist "requirements.txt" goto :eof
 
-set cmd=pip.exe install --no-color --compile -U --upgrade-strategy eager -r requirements.txt
-echo cmd %cmd%
+set cmd=pip.exe install --no-color --compile --upgrade-strategy eager --upgrade --requirement requirements.txt
+echo. | tee.exe -a %logfile%
+echo %cmd% | tee.exe -a %logfile%
+%cmd% | tee.exe -a %logfile%
+
+set cmd=python -m pip list --no-color
 echo. | tee.exe -a %logfile%
 echo %cmd% | tee.exe -a %logfile%
 %cmd% | tee.exe -a %logfile%
