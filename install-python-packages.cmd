@@ -8,8 +8,10 @@ del /q %logfile% >nul 2>&1
 REM ___________________________________________________________________________
 REM Create virtural environment
 if not exist ".\.env" (
+echo Creating virtual environment ...
 python -m venv ".\.env"
 )
+echo Activating virtual environment ...
 call .env\Scripts\activate
 
 REM ___________________________________________________________________________
