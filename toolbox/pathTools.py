@@ -35,10 +35,11 @@ def delete_empty_directories(folder):
     deleted_folders = []
     for root, dirs, _ in os.walk(folder, topdown=False):
         for dir in dirs:
-            name = os.path.join(root, dir)
-            if not len(os.listdir(name)):
-                deleted_folders.append(dir)
-                os.rmdir(name)
+            loc = os.path.join(root, dir)
+            with os.scandir(loc) as it:
+                if next(it, None) is None:
+                    deleted_folders.append(loc)
+                    os.rmdir(loc)
 
     return deleted_folders
 
@@ -88,12 +89,10 @@ def urlpath_to_pathname(url: str):
     urlp = parse.urlparse(' '.join(parse.unquote(url).strip().split()))
     path = urlp.path.strip(_URL_STRIP_CHARS).replace('/', '\\')
 
-    if path:
-        pathname = '%s\\%s' % (urlp.hostname, path) if urlp.hostname else path
-    elif urlp.hostname:
-        pathname = urlp.hostname
+    if not urlp.hostname:
+        pathname = path
     else:
-        pathname = ''
+        pathname = '%s\\%s' % (urlp.hostname, path) if path else urlp.hostname
 
     for ch in _PATHNAME_REPLACE_CHARS:
         if ch in pathname:
@@ -109,14 +108,12 @@ def url_suffix(url: str):
     """
     The final component's last suffix, if any.  Includes leading period (eg: .'html').
 
-    To avoid inspecting the hostname
+    Parsing:
+    1. Use urlparse to remove any trailing URL parameters.  Note a) "path" will contain the hostname when the URL
+    does not start with '//' and b) "path" can be empty string but never None.
+    2. Strip traling URL separator '/' and remove LHS far right URL separator
     """
-    urlp = parse.urlparse(parse.unquote(url))
-    path = urlp.path.strip()
-
-    if 0 <= (i := path.rfind('/')) < len(path):
-        path = path[i + 1:]
-    if 0 <= (j := path.rfind('.')) < len(path) - 1:
+    path = parse.urlparse(parse.unquote(url)).path.strip()
+    if (j := path.rfind('.', path.rfind('/') + 1, len(path) - 1)) >= 0:
         return path[j:]
-    else:
-        return ''
+    return ''
