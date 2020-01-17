@@ -34,12 +34,10 @@ class Node:
 
 
 # _____________________________________________________________________________
-def __node_type(value):
-    return _JSON_TYPES[type(value)]
-
-
-# _____________________________________________________________________________
 def json_visit(data, process_node=lambda x: x):
+    def __node_type(value):
+        return _JSON_TYPES[type(value)]
+
     array_name = '*'
     array_name_list = [array_name]
 
