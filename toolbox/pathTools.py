@@ -49,7 +49,7 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
     :return: List of deleted folders
     """
     deleted_folders = []
-    for parent, dirs, _ in os.walk(str(path), topdown=False):
+    for parent, dirs, _ in os.walk(path, topdown=False):
         for dir in [os.path.join(parent, d) for d in dirs]:
             with os.scandir(dir) as it:
                 if next(it, None) is None:
@@ -73,7 +73,7 @@ def delete_empty_old_files(path: os.PathLike, age: timedelta = None) -> (List[st
     cutoff = (datetime.now() - age).replace(hour=0, minute=0, second=0).timestamp() if age else None
 
     deleted_folders, deleted_files, errors = [], [], []
-    for parent, dirs, files in os.walk(str(path), topdown=False):
+    for parent, dirs, files in os.walk(path, topdown=False):
         # Delete empty and old files
         for file in [os.path.join(parent, f) for f in files]:
             if (cutoff and os.path.getmtime(file) < cutoff) or os.path.getsize(file) == 0:
@@ -178,24 +178,24 @@ def url_suffix(url: str) -> str:
 
 
 # _____________________________________________________________________________
-def open_files(path: str or os.PathLike) -> Tuple[str, int]:
+def open_files(path: os.PathLike) -> Tuple[str, int]:
     """Iterate over a root path returning an open file handle for each file found - including file in archives
     :return: Tuple[filename:str,file handle:int]
     """
-    for root, _, filenames in os.walk(str(path)):
+    for root, _, filenames in os.walk(path):
         # Iterate over files found in directory
+        rel_root_path = os.path.relpath(root, path)
         for filename in filenames:
-            path = Path(root, filename).resolve()
-            rel_path_str = str(Path(path.relative_to(path), path.name))
-
+            file_path = os.path.join(root, filename)
+            rel_file_path = os.path.join(rel_root_path, filename)[2:]
             # Test if file is an archive
             if file_suffix(filename) in ['.zip', '.gzip', '.gz']:
-                with zipfile.ZipFile(io.BytesIO(path.read_bytes())) as zp:
+                with zipfile.ZipFile(file_path) as zh:
                     # Iterate over files inside archive
-                    for zipinfo in filter(lambda z: not z.is_dir(), zp.infolist()):
-                        with zp.open(zipinfo) as file_handle:
-                            yield f'{rel_path_str}|{zipinfo.filename}', file_handle
+                    for zipinfo in filter(lambda z: not z.is_dir(), zh.infolist()):
+                        with zh.open(zipinfo) as file_handle:
+                            yield f'{rel_file_path}|{zipinfo.filename}', file_handle
             else:
                 # Yield non-archive file
-                with open(path) as file_handle:
-                    yield rel_path_str, file_handle
+                with open(file_path) as fh:
+                    yield rel_file_path, fh
