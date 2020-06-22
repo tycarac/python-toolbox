@@ -6,7 +6,9 @@
 *.log
 *.bak
 *.bak.*
+*.backup
 *.tmp
+*.tfstate
 
 # Project paths
 build/
@@ -27,8 +29,8 @@ __pycache__/
 # Development Tools
 .idea/
 .vscode/
-.terraform
-.terragrunt-cache
+.terraform/
+.terragrunt-cache/
 
 # Python
 .pytest_cache/
