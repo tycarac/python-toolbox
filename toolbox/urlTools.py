@@ -35,7 +35,6 @@ def url_join(url: str, /, *paths: str) -> str:
     if p := [y for z in paths if (y := z.strip(_URL_STRIP_CHARS))]:
         parts.extend(p)
         e = '/' if len(parts) and len(paths) and (len(paths[-1]) == 0 or paths[-1][-1] == '/') else ''
-        a = f'{s}{"/".join(parts)}{e}'
         return f'{s}{"/".join(parts)}{e}'
     else:
         return u + '/' if u else s
