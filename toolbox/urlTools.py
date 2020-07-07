@@ -29,15 +29,14 @@ def url_join(url: str, /, *paths: str) -> str:
 
     Does not validate URL
     """
-    parts = [u] if (u := url.rstrip(_URL_STRIP_CHARS)) else []
-    paths = [y for z in paths if (y := z.strip())]
-    s = '/' if not u and len(paths) and (len(paths[0]) == 0 or paths[0][0] == '/') else ''
-    if p := [y for z in paths if (y := z.strip(_URL_STRIP_CHARS))]:
-        parts.extend(p)
-        e = '/' if len(parts) and len(paths) and (len(paths[-1]) == 0 or paths[-1][-1] == '/') else ''
-        return f'{s}{"/".join(parts)}{e}'
-    else:
-        return u + '/' if u else s
+    p = '/'.join(filter(lambda x: x, map(lambda x: x.strip(), paths)))
+    uj = f'{u}/{p}' if (u := url.rstrip(_URL_STRIP_CHARS)) else p
+    b, s, e = uj.partition('://')
+    while '//' in b:
+        b = b.replace('//', '/')
+    while '//' in e:
+        e = e.replace('//', '/')
+    return f'{b}{s}{e}'
 
 
 # _____________________________________________________________________________

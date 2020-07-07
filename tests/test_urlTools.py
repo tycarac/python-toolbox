@@ -85,6 +85,7 @@ def test_url_suffix(given, expected):
 
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
+    (['http://abc.info/', '/def/'], 'http://abc.info/def/'),
     (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
     (['http://abc.info', 'def'], 'http://abc.info/def'),
     (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
@@ -97,6 +98,10 @@ def test_url_suffix(given, expected):
     (['abc.edu/', '/'], 'abc.edu/'),
     (['abc.net', ''], 'abc.net/'),
     (['abc.net'], 'abc.net/'),
+    (['a', 'b'], 'a/b'),
+    (['a', '/b'], 'a/b'),
+    (['a', 'b/'], 'a/b/'),
+    (['a', '/'], 'a/'),
     (['', '/a/'], '/a/'),
     (['', '/a'], '/a'),
     (['', 'a/'], 'a/'),
