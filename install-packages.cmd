@@ -60,7 +60,7 @@ echo.
 echo %cmd%
 %cmd%
 
-REM Output Python version inside virtual environment
+REM Output Python version inside virtual environment (again at end)
 echo.
 python.exe --version
 

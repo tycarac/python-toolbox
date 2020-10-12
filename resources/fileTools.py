@@ -1,7 +1,5 @@
 from datetime import timedelta, date, datetime, time
 import os
-from pathlib import Path
-import string
 from typing import List, Tuple
 import unicodedata
 from urllib import parse
@@ -63,7 +61,7 @@ def sanitize_filepath(filename: str, /, replace_dot=False, replace_folder_sep=Fa
             fname = fname.replace(ch, '-')
     # Replace folder separators as instructed
     for ch in _FOLDER_SEPARATOR_CHARS:
-        if (replace_folder_sep or ch != os.sep) and ch in fname:
+        if ch in fname and (replace_folder_sep or ch != os.sep):
             fname = fname.replace(ch, '-')
     if not fname.isascii():
         fname = unicodedata.normalize('NFKD', fname).encode('ASCII', 'ignore').decode('ASCII')
