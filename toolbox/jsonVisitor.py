@@ -7,7 +7,6 @@ JSON Specification: https://tools.ietf.org/html/rfc8259
 """
 from dataclasses import dataclass
 from collections import deque
-from typing import List
 
 _JSON_TYPES = {
     # structure
@@ -28,7 +27,7 @@ _JSON_TYPES = {
 class Node:
     __slots__ = ['name', 'names', 'type', 'value']
     name: str
-    names: List[str]
+    names: list[str]
     type: _JSON_TYPES
     value: object
 

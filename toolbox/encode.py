@@ -16,6 +16,8 @@ class CharSetEncoder:
                                           byteorder=byteorder))
 
     def encode(self, number: int) -> str:
+        if number < 0:
+            raise ValueError('number cannot be negative')
         if number == 0:
             return self._char_set[0]
         string = ''

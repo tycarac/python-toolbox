@@ -1,13 +1,14 @@
 from pathlib import Path
 import re
 import os.path
-from typing import List, Set, Any, Collection, Iterable
+from typing import Iterable
 
 
 # _____________________________________________________________________________
-def filter_paths_by_regex(path: os.PathLike, inc_regexes: List[str] = None, exc_regexes: List[str] = None,
+def filter_paths_by_regex(path: os.PathLike, inc_regexes: list[str] = None, exc_regexes: list[str] = None,
             file_filter:str = '*.*'):
     """Use recursive glob to collect the files in a named path and then apply regex include and exclude filters.
+
     Notes:
         1. Prefilter can be applied to glob function to reduce size of data processed
         2. Regex expressions only applied to filename and not path (Use of dict).
@@ -27,9 +28,10 @@ def filter_paths_by_regex(path: os.PathLike, inc_regexes: List[str] = None, exc_
 
 
 # _____________________________________________________________________________
-def filter_by_regex(itr: Iterable, inc_regexes: List[str] = None, exc_regexes: List[str] = None):
-    """Filter the input iterable against two lists of regex (regular expressions).  First, keep
-    collection items with any regex match in the include regex list.  Then second, remove
+def filter_by_regex(itr: Iterable, inc_regexes: list[str] = None, exc_regexes: list[str] = None):
+    """Filter the input iterable against two lists of regex (regular expressions).
+
+    First, keep collection items with any regex match in the include regex list.  Then second, remove
     collection items with any regex match in the exclude regex list.
 
     Notes:
