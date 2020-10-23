@@ -36,7 +36,6 @@ def test_filter_paths_by_regex_2():
 
 # _____________________________________________________________________________
 def test_filter_by_regex_null():
-
     # Empty regrex
     result = list(filterTools.filter_by_regex(data_1, None, None))
     assert result == data_1

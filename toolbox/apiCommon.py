@@ -2,7 +2,6 @@ import json
 import logging.config
 from pathlib import Path
 import urllib3
-from urllib import parse, request, error
 
 TIME_JITTER_S = 10
 URL_TIMEOUT_S = 20
