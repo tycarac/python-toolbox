@@ -2,7 +2,7 @@ import logging
 import pytest
 
 
-from toolbox.encode import CharSetEncoder
+from toolbox.encoder import CharSetEncoder
 
 _logger = logging.getLogger(__name__)
 
