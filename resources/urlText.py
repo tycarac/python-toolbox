@@ -1,5 +1,6 @@
 import certifi
 import logging
+from os import PathLike
 from pathlib import Path
 import time
 from typing import Union
@@ -46,19 +47,21 @@ class UrlText:
 
     # _____________________________________________________________________________
     @staticmethod
-    def get(url: str, filepath: Path, cache_age: int = _CACHE_AGE, fields: dict[str, str] = None) -> (str, bool):
-        _logger.debug('get')
+    def get(url: str, filepath: Union[PathLike,str], cache_age: int = _CACHE_AGE,
+            fields: dict[str, str] = None) -> (str, bool):
+        _logger.debug(f'get: {url}')
 
-        if UrlText.__is_cached(filepath, cache_age):
+        path = filepath if isinstance(filepath, Path) else Path(filepath).resolve()
+        if UrlText.__is_cached(path, cache_age):
             return filepath.read_text(), True
 
         data = None
-        if not filepath.parent.exists():
-            filepath.parent.mkdir(parents=True, exist_ok=True)
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
         try:
             rsp = UrlText._url_client.request('GET', url, fields=fields)
             if rsp.status == 200:
-                data = UrlText.__write_cached_text(rsp.data, filepath)
+                data = UrlText.__write_cached_text(rsp.data, path)
             else:
                 _logger.debug(f'Bad response status {rsp.status} for {url}')
         except (exceptions.HTTPError, exceptions.SSLError):
