@@ -46,9 +46,10 @@ def json_visit(data, process_node=lambda x: x):
         yield process_node(node) if process_node else node
 
         # Process children (if any)
-        if type(node.value) is dict:
-            children = [Node(n, node.names + [n], __node_type(v), v) for n, v in (dict)(node.value).items()]
+        value = node.value
+        if type(value) is dict:
+            children = [Node(n, node.names + [n], __node_type(v), v) for n, v in value.items()]
             to_visit.extendleft(reversed(children))
-        elif type(node.value) is list:
-            children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in iter(node.value)]
+        elif type(value) is list:
+            children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in value]
             to_visit.extendleft(reversed(children))
