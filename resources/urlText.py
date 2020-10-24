@@ -46,7 +46,7 @@ class UrlText:
 
     # _____________________________________________________________________________
     @staticmethod
-    def get(filepath: Path, url: str, cache_age: int = _CACHE_AGE, fields: dict[str, str] = None) -> (str, bool):
+    def get(url: str, filepath: Path, cache_age: int = _CACHE_AGE, fields: dict[str, str] = None) -> (str, bool):
         _logger.debug('get')
 
         if UrlText.__is_cached(filepath, cache_age):
