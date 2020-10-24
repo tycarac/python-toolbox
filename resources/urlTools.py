@@ -15,7 +15,7 @@ _SPACE_CHARS = '\u00A0\u2002\u2003'  # Does not include HTML specialized spaces
 UrlParts = namedtuple('UrlParts', ['scheme', 'authority', 'path', 'query', 'fragment'])
 UrlAuthorityParts = namedtuple('UrlAuthorityParts', ['user', 'host', 'port'])
 
-re_url = re.compile(r'^(?:([a-z][a-z0-9+-.]*):(?://)?)??([^:/]+(?::\d{1,5})?)?' 
+re_url = re.compile(r'^(?:([a-z][a-z0-9+-.]*):(?://)?)??([^:/]+(?::\d{1,5})?)?'
                     r'(?:(/[^?#]*))?(?:\?([^#]*))?(?:#(.*))?$', re.IGNORECASE)
 
 
@@ -101,4 +101,3 @@ def url_split_authority(auth: str) -> (str, str, str):
         port = int(auth[loc_colon + 1:])
         auth = auth[:loc_colon]
     return UrlAuthorityParts(user, auth, port)
-
