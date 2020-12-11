@@ -15,9 +15,9 @@ _logger = logging.getLogger(__name__)
     ('https://docs.aws.amazon.com', 'zfv3pv2'),
     ('https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification.html/serverless-application-model-updates.rss', '6wdkr6')
     ])
-def test_hash(given, expected):
-    encoder = CharSetEncoder()
-    assert encoder.hash(given) == expected
+def test_hash_4(given, expected):
+    CharSetEncoder.set_digest_size(4)
+    assert CharSetEncoder.hash(given) == expected
 
 
 # _____________________________________________________________________________
@@ -28,9 +28,9 @@ def test_hash(given, expected):
     ('https://docs.aws.amazon.com', 'jzmjqfmdc'),
     ('https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification.html/serverless-application-model-updates.rss', 'hhh6jr8858')
     ])
-def test_hash_6(given, expected):
-    encoder = CharSetEncoder(digest_size=6)
-    assert encoder.hash(given) == expected
+def test_hash(given, expected):
+    CharSetEncoder.set_digest_size(6)
+    assert CharSetEncoder.hash(given) == expected
 
 
 # _____________________________________________________________________________
@@ -38,5 +38,4 @@ def test_hash_6(given, expected):
     (1, 1),
 ])
 def test_encode_decode(given, expected):
-    encoder = CharSetEncoder()
-    assert encoder.decode(encoder.encode(given)) == expected
+    assert CharSetEncoder.decode(CharSetEncoder.encode(given)) == expected
