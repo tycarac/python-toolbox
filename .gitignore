@@ -2,14 +2,15 @@
 # https://git-scm.com/docs/gitignore
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 
-# Non-source files
+# _____________________________________________________________________________
+# Build files
 *.bak
 *.bak.*
 *.backup
 *.log
 *.tmp
 
-# Project paths / files
+# Build paths
 build/
 cache/
 logs/
@@ -27,14 +28,29 @@ data/
 .idea/
 .vscode/
 
-# Development paths / files
+# _____________________________________________________________________________
+# Development
+# - Terraform
+**/.terraform/*
 *.tfstate
-.terraform/
-.terragrunt-cache/
+*.tfstate.*
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# - Terragrunt
+**/.terragrunt-cache/*
+
+# - Antlr
 .antlr/
 
 # _____________________________________________________________________________
 # Python
+# - Common build files
 *.cover
 .pytest_cache/
 .nox/
@@ -43,13 +59,13 @@ data/
 .coverage
 .coverage.*
 
-# Python byte-compiled / optimized / DLL files
+# - Python byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cd]
 *$py.class
 *.so
 
-# Python Environments
+# - Python Environments
 .env/
 env/
 .venv/
