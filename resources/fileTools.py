@@ -48,14 +48,14 @@ def sanitize_filepath(filename: str, /, replace_dot=False, replace_folder_sep=Fa
 
     Remove URL character encodings and leading/trailing whitespaces.
     Replace whitespaces with '-' character (for Linux ease-of-use)
-    Convert Unicode dashes to ASCII dash, but other unicode characters removed.
+    Convert Unicode dashes to ASCII dash, but other Unicode characters removed.
     Optionally, remove dot character but not from leading
     No checks on None, for leading/trailing dots, or filename length.
     """
     join_ch = ' ' if os.name == 'nt' else '-'
     fname = join_ch.join(parse.unquote(filename).split())
 
-    # Replace invalid characters with '-' and replace unicode dashes with ASCII '-'
+    # Replace invalid characters with '-' and replace Unicode dashes with ASCII '-'
     for ch in _FILENAME_REPLACE_CHARS:
         if ch in fname:
             fname = fname.replace(ch, '-')
@@ -80,13 +80,13 @@ def delete_empty_directories(path: os.PathLike) -> list[str]:
     :return: List of deleted folders
     """
     deleted_folders = []
-    for parent, dirs, _ in os.walk(path, topdown=False):
-        for dir in [os.path.join(parent, d) for d in dirs]:
-            with os.scandir(dir) as it:
+    for parent, folders, _ in os.walk(path, topdown=False):
+        for folder in [os.path.join(parent, f) for f in folders]:
+            with os.scandir(folder) as it:
                 if next(it, None) is None:
                     try:
-                        os.rmdir(dir)
-                        deleted_folders.append(dir)
+                        os.rmdir(folder)
+                        deleted_folders.append(folder)
                     except PermissionError:
                         pass
 
@@ -111,7 +111,7 @@ def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (list
             cutoff = (datetime.now() - age).timestamp()
 
     deleted_folders, deleted_files, errors = [], [], []
-    for parent, dirs, files in os.walk(path, topdown=False):
+    for parent, folders, files in os.walk(path, topdown=False):
         # Delete empty and old files
         for file in [os.path.join(parent, f) for f in files]:
             if (cutoff and os.path.getmtime(file) < cutoff) or os.path.getsize(file) == 0:
@@ -122,14 +122,14 @@ def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (list
                     errors.append(file)
 
         # Delete empty directories
-        for dir in [os.path.join(parent, d) for d in dirs]:
-            with os.scandir(dir) as it:
+        for folder in [os.path.join(parent, d) for d in folders]:
+            with os.scandir(folder) as it:
                 if next(it, None) is None:
                     try:
-                        os.rmdir(dir)
-                        deleted_folders.append(dir)
+                        os.rmdir(folder)
+                        deleted_folders.append(folder)
                     except PermissionError:
-                        errors.append(dir)
+                        errors.append(folder)
 
     return deleted_files, deleted_folders, errors
 
