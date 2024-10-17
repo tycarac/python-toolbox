@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+
 import pytest
 
 from resources import fileTools
@@ -17,7 +18,7 @@ _logger = logging.getLogger(__name__)
     ('.a.b.c.d', '.a.b.c.d'),
     ('\t', ''),
     ('', '')
-    ])
+])
 def test_sanitize_filepath(given, expected):
     assert fileTools.sanitize_filepath(given) == expected
 
@@ -36,7 +37,7 @@ def test_sanitize_filepath(given, expected):
     ('.a.b.c.d', '.a-b-c-d'),
     ('', ''),
     ('\t', '')
-    ])
+])
 def test_dot_sanitize_filepath(given, expected):
     assert fileTools.sanitize_filepath(given, replace_dot=True) == expected
 
@@ -49,7 +50,7 @@ def test_dot_sanitize_filepath(given, expected):
     ('file://e/f/', 'file---e-f-'),
     ('', ''),
     ('\t', '')
-    ])
+])
 def test_sep_sanitize_filename(given, expected):
     assert fileTools.sanitize_filepath(given, replace_folder_sep=True) == expected
 
@@ -61,7 +62,7 @@ def test_sep_sanitize_filename(given, expected):
     (Path('e:\\'), Path('e:\\')),
     (Path('c:\\p f\\w nt'), Path('c:\\p f\\w nt\\')),
     (Path('c:\\p f\\w nt'), Path('c:\\p f\\w nt\\s.txt'))
-    ])
+])
 def test_is_parent_path(parent, path):
     assert fileTools.is_parent(parent, path)
 
@@ -70,7 +71,7 @@ def test_is_parent_path(parent, path):
 @pytest.mark.parametrize('parent, path', [
     (Path('c:\\abcd\\efgh'), Path('c:\\temp\\efgh')),
     (Path('e:\\'), Path('f:\\'))
-    ])
+])
 def test_fail_is_parent_path(parent, path):
     assert not fileTools.is_parent(parent, path)
 
@@ -90,6 +91,6 @@ def test_fail_is_parent_path(parent, path):
     ('abc.def/.ext', ''),
     ('abc.def/ghi', ''),
     ('abc.def/ghi.tar.gzip', '.gzip')
-    ])
+])
 def test_file_suffix(given, expected):
     assert fileTools.file_suffix(given) == expected

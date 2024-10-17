@@ -1,9 +1,10 @@
-import certifi
 import logging
+import time
 from os import PathLike
 from pathlib import Path
-import time
 from typing import Union
+
+import certifi
 from urllib3 import exceptions, make_headers, Retry, PoolManager, Timeout
 
 _logger = logging.getLogger(__name__)
@@ -12,7 +13,6 @@ _CACHE_AGE: int = 6 * 3600
 
 # _____________________________________________________________________________
 class UrlText:
-
     _url_headers = make_headers(keep_alive=False, accept_encoding=True)
     _url_headers |= {'Accept': 'text/*', 'Accept-Charset': 'utf-8', 'User-Agent': 'Mozilla/5.0'}
     _url_retries = Retry(total=4, backoff_factor=3, status_forcelist=[500, 502, 503, 504])
@@ -47,7 +47,7 @@ class UrlText:
 
     # _____________________________________________________________________________
     @staticmethod
-    def get(url: str, filepath: Union[PathLike,str], cache_age: int = _CACHE_AGE,
+    def get(url: str, filepath: Union[PathLike, str], cache_age: int = _CACHE_AGE,
             fields: dict[str, str] = None) -> (str, bool):
         _logger.debug(f'get: {url}')
 

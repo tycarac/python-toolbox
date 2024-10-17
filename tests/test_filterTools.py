@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-import pytest
 
 from toolbox import filterTools
 
@@ -61,4 +60,3 @@ def test_filter_by_regex():
 
     result = list(filterTools.filter_by_regex(data_1, regex_inc, regex_exc))
     assert result == ['a.txt', 'g.txt']
-

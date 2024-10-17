@@ -9,18 +9,25 @@
 *.backup
 *.log
 *.tmp
+*.*~
+*.*#
+.*
 
-# Build paths
+# Build and processing paths
+archive/
 build/
 cache/
+downloads/
 logs/
+
+# Output paths
 out/
 output/
-temp/
-tmp/
+**/temp/
+**/tmp/
+**/backup/
 
 # Data paths / files
-*.sqlite
 data/
 
 # IDEs paths / files
@@ -50,7 +57,7 @@ terraform.rc
 
 # _____________________________________________________________________________
 # Python
-# - Common build files
+# - Common pipeline build/test files
 *.cover
 .pytest_cache/
 .nox/
@@ -60,10 +67,11 @@ terraform.rc
 .coverage.*
 
 # - Python byte-compiled / optimized / DLL files
-__pycache__/
 *.py[cd]
 *$py.class
 *.so
+**/__pycache__/
+
 
 # - Python Environments
 .env/

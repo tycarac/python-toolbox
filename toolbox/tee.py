@@ -1,7 +1,8 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
+# _____________________________________________________________________________
 class Tee(object):
     def __init__(self, filename=None, mode='wt', flush=True):
         if filename is None:

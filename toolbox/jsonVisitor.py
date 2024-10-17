@@ -5,8 +5,9 @@ over use of stack space.
 
 JSON Specification: https://tools.ietf.org/html/rfc8259
 """
-from dataclasses import dataclass
 from collections import deque
+from dataclasses import dataclass
+from typing import List, Dict
 
 _JSON_TYPES = {
     # structure
@@ -47,9 +48,9 @@ def json_visit(data, process_node=lambda x: x):
 
         # Process children (if any)
         value = node.value
-        if type(value) is dict:
+        if type(value) is Dict:
             children = [Node(n, node.names + [n], __node_type(v), v) for n, v in value.items()]
             to_visit.extendleft(reversed(children))
-        elif type(value) is list:
+        elif type(value) is List:
             children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in value]
             to_visit.extendleft(reversed(children))

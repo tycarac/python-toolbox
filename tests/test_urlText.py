@@ -1,8 +1,9 @@
-from pathlib import Path
-from resources.urlText import UrlText
 import logging
 from os import PathLike
+from pathlib import Path
 from typing import Union
+
+from resources.urlText import UrlText
 
 _logger = logging.getLogger(__name__)
 
@@ -22,10 +23,10 @@ def test_get_text(tmpdir):
 
     data, is_cached = get('https://www.npr.org/proxy/listening/v2/newscast/1/recommendations',
                           testdir, 'recommendations.txt')
-    assert(data is not None and len(data) > 0)
-    assert(is_cached is False)
+    assert (data is not None and len(data) > 0)
+    assert (is_cached is False)
 
     data, is_cached = get('https://www.npr.org/proxy/listening/v2/newscast/1/recommendations',
                           testdir, 'recommendations.txt')
-    assert(data is not None and len(data) > 0)
-    assert(is_cached is True)
+    assert (data is not None and len(data) > 0)
+    assert (is_cached is True)

@@ -1,9 +1,10 @@
-from datetime import timedelta, datetime
 import os
-from typing import Tuple
-import unicodedata
-from urllib import parse
 import zipfile
+from datetime import timedelta, datetime
+from typing import Tuple
+from urllib import parse
+
+import unicodedata
 
 # Filename constants
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file

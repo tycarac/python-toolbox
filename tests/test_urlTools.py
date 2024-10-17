@@ -1,4 +1,5 @@
 import logging
+
 import pytest
 
 from resources import urlTools
@@ -50,7 +51,7 @@ _logger = logging.getLogger(__name__)
     ('file:///c:/Windows/win.ini', urlTools.UrlParts('file', '', '/c:/Windows/win.ini', None, None)),
 
     ('', urlTools.UrlParts('', '', '', None, None))
-    ])
+])
 def test_url_split(given, expected):
     assert urlTools.url_split(given) == expected
 
@@ -65,7 +66,7 @@ def test_url_split(given, expected):
     ('c@a.b', urlTools.UrlAuthorityParts('c', 'a.b', None)),
     ('c@a.b:82', urlTools.UrlAuthorityParts('c', 'a.b', 82)),
     ('', urlTools.UrlAuthorityParts(None, '', None))
-    ])
+])
 def test_url_split_authority(given, expected):
     assert urlTools.url_split_authority(given) == expected
 
@@ -118,7 +119,7 @@ def test_url_join(given, expected):
     ('/ ec2 /?id = docs_gateway', r'ec2'),
     ('/', ''),
     ('', '')
-    ])
+])
 def test_url_to_pathname(given, expected):
     assert urlTools.url_to_pathname(given) == expected
 
@@ -128,7 +129,7 @@ def test_url_to_pathname(given, expected):
     ('a:80', r'a-80'),
     ('b:80/', r'b-80'),
     ('a.com:80/d/', r'a.com-80\d')
-    ])
+])
 def test_fail_url_to_pathname(given, expected):
     assert urlTools.url_to_pathname(given) != expected
 
@@ -155,6 +156,6 @@ def test_fail_url_to_pathname(given, expected):
     ('/ ec /?file = file.txt', ''),
     ('https://docs.abc.com/latest/page.html?icmpid=docs/release-notes.rss', '.html'),
     ('', '')
-    ])
+])
 def test_url_suffix(given, expected):
     assert urlTools.url_path_suffix(given) == expected

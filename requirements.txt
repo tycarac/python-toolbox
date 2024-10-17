@@ -2,4 +2,5 @@ beautifulsoup4
 lxml
 pytest
 tzlocal
-urllib3[secure]
+urllib3
+certifi

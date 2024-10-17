@@ -1,7 +1,7 @@
-from collections import namedtuple
 import os
 import re
 import string
+from collections import namedtuple
 from urllib import parse
 
 from .fileTools import sanitize_filepath

@@ -15,6 +15,7 @@ from sys import exc_info
 class NoExceptionFormatter(Formatter):
     """Remove exception details from logger formatter so to declutter log output
     """
+
     def format(self, record: LogRecord):
         record.exc_text = ''
         return super().format(record)
@@ -27,6 +28,7 @@ class NoExceptionFormatter(Formatter):
 class MessageFormatter(Formatter):
     """Remove all exception details from logger formatter except for message so to declutter log output
     """
+
     def format(self, record: LogRecord):
         record.exc_text = ''
         return super().format(record)
@@ -40,6 +42,7 @@ class MessageFormatter(Formatter):
 class OneLineFormatter(Formatter):
     """Covert exception details to single line to simplify log output processing
     """
+
     def format(self, record: LogRecord):
         if text := super().format(record):
             text = text.strip().replace('\n', '|')
@@ -52,6 +55,7 @@ class PathFileHandler(FileHandler):
 
     Note this has some security risk as the file path is arbitrary and could be any location.
     """
+
     def __init__(self, filename, mode='a', encoding=None, delay=False):
         Path.mkdir(Path(filename).parent, parents=True, exist_ok=True)
         super().__init__(filename, mode, encoding, delay)

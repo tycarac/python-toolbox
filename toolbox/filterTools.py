@@ -1,12 +1,12 @@
-from pathlib import Path
-import re
 import os.path
+import re
+from pathlib import Path
 from typing import Iterable
 
 
 # _____________________________________________________________________________
 def filter_paths_by_regex(path: os.PathLike, inc_regexes: list[str] = None, exc_regexes: list[str] = None,
-            file_filter:str = '*.*'):
+                          file_filter: str = '*.*'):
     """Use recursive glob to collect the files in a named path and then apply regex include and exclude filters.
 
     Notes:
@@ -23,7 +23,7 @@ def filter_paths_by_regex(path: os.PathLike, inc_regexes: list[str] = None, exc_
 
     for p in Path(path).resolve().rglob(file_filter):
         if (not inc_cmpl or any(r.search(p.name) for r in inc_cmpl)) \
-                    and not (exc_cmpl and any(r.search(p.name) for r in exc_cmpl)):
+                and not (exc_cmpl and any(r.search(p.name) for r in exc_cmpl)):
             yield p
 
 
