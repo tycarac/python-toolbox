@@ -1,4 +1,5 @@
 import multiprocessing
+from typing import List
 
 
 # _____________________________________________________________________________
@@ -6,17 +7,17 @@ class IncCounter(object):
     def __init__(self, value=0):
         self._val = multiprocessing.Value('i', value)
 
-    def inc(self):
+    def inc(self) -> None:
         with self._val.get_lock():
             self._val.value += 1
 
     @property
-    def value(self):
+    def value(self) -> int:
         with self._val.get_lock():
             return self._val.value
 
     @property
-    def inc_value(self):
+    def inc_value(self) -> int:
         with self._val.get_lock():
             self._val.value += 1
             return self._val.value
@@ -24,53 +25,29 @@ class IncCounter(object):
 
 # _____________________________________________________________________________
 class IncLetterCounter(object):
-    def __init__(self, value=0):
-        self._val = multiprocessing.Value('i', value)
+    _arr: List[int]
+    _value: str
 
-    def inc(self):
-        with self._val.get_lock():
-            self._val.value += 1
+    def __init__(self, init_value: str='A'):
+        self._value = init_value
+        self._arr = list(ord(c) for c in reversed(init_value))
 
-    @property
-    def value(self):
-        with self._val.get_lock():
-            return self._val.value
-
-    @property
-    def inc_value(self):
-        with self._val.get_lock():
-            self._val.value += 1
-            return self._val.value
-
-
-# _____________________________________________________________________________
-class AutoId2(object):
-    def __init__(self, id1: int = 0, id2: int = 0):
-        self._id1 = multiprocessing.Value('i', id1)
-        self._id2 = multiprocessing.Value('i', id2)
-        self
-
-    def inc1(self):
-        with self._id1.get_lock():
-            self._id1.value += 1
-
-    def inc2(self):
-        with self._id2.get_lock():
-            self._id2.value += 1
+    def inc(self) -> None:
+        self._arr[0] += 1
+        for i in range(len(self._arr)):
+            if self._arr[i] > 90:
+                self._arr[i] = 65
+                if i < len(self._arr) - 1:
+                    self._arr[i + 1] += 1
+                else:
+                    self._arr.append(65)
+        self._value = ''.join(chr(x) for x in reversed(self._arr))
 
     @property
-    def value(self):
-        with self._val.get_lock():
-            return self._val.value
+    def value(self) -> str:
+        return self._value
 
     @property
-    def inc_id1_value(self):
-        with self._val.get_lock():
-            self._val.value += 1
-            return self._val.value
-
-    @property
-    def inc_id2_value(self):
-        with self._id2.get_lock():
-            self._id2.value += 1
-            return self.value
+    def inc_value(self) -> str:
+        self.inc()
+        return self._value
