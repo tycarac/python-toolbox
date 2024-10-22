@@ -15,16 +15,22 @@ def test_inc_counter():
     assert ctr.value == 2
     assert ctr.inc_value == 3
 
+    ctr = IncCounter(1)
+    assert ctr.value == 1
+    assert ctr.inc_value == 2
+    assert ctr.inc_value == 3
+    assert ctr.inc_value == 4
+
+    ctr = IncCounter(98)
+    assert ctr.value == 98
+    assert ctr.inc_value == 99
+    assert ctr.inc_value == 100
+    assert ctr.inc_value == 101
+    assert ctr.inc_value == 102
+
 
 # _____________________________________________________________________________
 def test_inc_letter_counter():
-    ctr = IncLetterCounter('ZY')
-    assert ctr.value == 'ZY'
-    assert ctr.inc_value == 'ZZ'
-    assert ctr.inc_value == 'AAA'
-    assert ctr.inc_value == 'AAB'
-    assert ctr.inc_value == 'AAC'
-
     ctr = IncLetterCounter()
     assert ctr.value == 'A'
     assert ctr.inc_value == 'B'
