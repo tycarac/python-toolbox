@@ -99,3 +99,10 @@ class IncLetterNumberCounter(object):
     def value(self) -> str:
         return self._value
 
+    @property
+    def letter_value(self) -> str:
+        return self._str
+
+    @property
+    def number_value(self) -> str:
+        return str(self._number)
