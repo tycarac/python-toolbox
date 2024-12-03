@@ -22,8 +22,8 @@ def filter_paths_by_regex(path: os.PathLike, inc_regexes: list[str] = None, exc_
     exc_cmpl = [re.compile(regex, re.IGNORECASE) for regex in exc_regexes] if exc_regexes else None
 
     for p in Path(path).resolve().rglob(file_filter):
-        if (not inc_cmpl or any(r.search(p.name) for r in inc_cmpl)) \
-                and not (exc_cmpl and any(r.search(p.name) for r in exc_cmpl)):
+        if (not inc_cmpl or any(r.search(p.name) for r in inc_cmpl)) and not (
+                exc_cmpl and any(r.search(p.name) for r in exc_cmpl)):
             yield p
 
 
