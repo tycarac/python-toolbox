@@ -1,0 +1,6 @@
+beautifulsoup4
+certifi
+lxml
+pytest
+tzlocal
+urllib3
