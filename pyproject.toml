@@ -1,13 +1,16 @@
 [project]
-name = "python-toolbox"
-version = "0.1.1"
-description = "Toolbox Python code"
-readme = "README.md"
+name = 'python-toolbox'
+version = '0.1.1'
+description = 'Toolbox Python code'
+readme = 'README.md'
 requires-python = '>=3.14,<3.15'
-license = "GPL-3.0-or-later"
-license-files = ["LICEN[CS]E*"]
+license = 'GPL-3.0-or-later'
+license-files = ['LICEN[CS]E*']
 dependencies = [
-    "beautifulsoup4",
+    'duckdb',
+    'beautifulsoup4',
+    'certifi',
+    'pyarrow',
     'python-dateutil',
     'lxml',
     'platformdirs',
@@ -19,7 +22,7 @@ dependencies = [
 requires = ['uv_build>=0.13.0,<0.14']
 build-backend = 'uv_build'
 
-[poject.scripts]
+[project.scripts]
 setup-browser = 'playwright install --with-deps chromium'
 
 [tool.uv.build-backend]
@@ -67,10 +70,7 @@ select = ['E4', # Import and structural pycodestyle errors
 split-on-trailing-comma = false
 
 [tool.ty.src]
-include = ['toolbox',
-    'resources',
-    'tests',
-]
+include = ['src', 'tests']
 
 [tool.ty.rules]
 dynamic-function-decorator-return = 'error'
