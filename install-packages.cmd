@@ -17,7 +17,7 @@ echo Creating virtual environment ...
 python -m venv ".\.venv" | tee.exe -a %logfile%
 )
 echo Activating virtual environment ...
-call .venv\Scripts\activate
+call .venv\Scripts\activate | tee.exe -a %logfile%
 
 REM Output Python version inside virtual environment
 python.exe --version | tee.exe -a %logfile%
