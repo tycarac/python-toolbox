@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from toolbox import paths
+from toolbox import pathTools
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ def test_sanitize_filename():
 
     for test in pos_tests:
         expected, given = test
-        assert paths.sanitize_filename(given) == expected
+        assert pathTools.sanitize_filename(given) == expected
 
 
 # _____________________________________________________________________________
@@ -28,14 +28,14 @@ def test_is_parent_path():
 
     for test in pos_tests:
         parent, path, result = test
-        assert paths.is_parent(parent, path) == result
+        assert pathTools.is_parent(parent, path) == result
 
 
 # _____________________________________________________________________________
 def test_join_url_path():
-    assert paths.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def/'
-    assert paths.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi/'
-    assert paths.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi/'
+    assert pathTools.join_url_path('https://abc.com/', '/def/') == 'https://abc.com/def/'
+    assert pathTools.join_url_path('https://abc.com/', '/def/', '/ghi/') == 'https://abc.com/def/ghi/'
+    assert pathTools.join_url_path('abc.com', 'def', 'ghi') == 'abc.com/def/ghi/'
 
 
 # _____________________________________________________________________________
@@ -47,5 +47,5 @@ def test_urlpath_to_pathname():
 
     for test in pos_tests:
         expected, given = test
-        assert paths.urlpath_to_pathname(given) == expected
+        assert pathTools.urlpath_to_pathname(given) == expected
 
