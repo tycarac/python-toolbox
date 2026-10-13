@@ -22,17 +22,17 @@ def fetch_api_credentials(api_client):
         client = api_settings['clients'][api_client]
         return client['scope'], client['client_id'], client['client_secret'], api_settings['oauth_url']
     except Exception as ex:
-        logger.fatal('Failed configuration for API client: %s' % api_client)
+        logger.fatal(f'Failed configuration for API client: {api_client}')
         raise ex
 
 
 # _____________________________________________________________________________
 def get_oauth_token(api_client):
     try:
-        logger.info('Fetching OAuth: %s' % api_client)
+        logger.info(f'Fetching OAuth: {api_client}')
         scope, client_id, client_secret, oauth_url = fetch_api_credentials(api_client)
     except Exception as ex:
-        logger.exception('Error fetching OAuth client config: %s' % api_client)
+        logger.exception(f'Error fetching OAuth client config: {api_client}')
         return None
 
     try:
@@ -47,10 +47,10 @@ def get_oauth_token(api_client):
             'client_secret': client_secret
         }
 
-        logger.debug('URL: %s' % oauth_url)
+        logger.debug(f'URL: {oauth_url}')
         headers.update(url_headers)
         rsp = url_client.request_encode_body('POST', oauth_url, headers=headers, fields=payload, encode_multipart=False)
-        logger.debug('code: %d' % rsp.status)
+        logger.debug(f'code: {rsp.status}')
         if rsp.status == 200:
             data = rsp.data
             result = json.loads(data.decode('utf-8'))
@@ -61,7 +61,3 @@ def get_oauth_token(api_client):
         logger.exception('generic exception')
 
     return None
-
-
-
-
