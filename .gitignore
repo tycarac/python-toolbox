@@ -3,70 +3,86 @@
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 
 # _____________________________________________________________________________
-# Build files
+# Generated files
 *.bak
 *.bak.*
 *.backup
+*.bkp
 *.log
 *.tmp
+*.*~
+*.*#
+.*
+!.gitignore
+!.aiignore
 
-# Build paths
+# Archive files
+*.7z
+*.bz2
+*.gz
+*.gzip
+*.rar
+*.tar
+*.tgz
+*.zip
+
+# Project paths
+archive/
 build/
 cache/
+dist/
+downloads/
 logs/
+
+# Project output paths
 out/
 output/
-temp/
-tmp/
+**/temp/
+**/tmp/
+**/backup/
 
-# Data paths / files
+# Project data paths / files
 *.sqlite
-data/
+*.db
+*.duckdb
+data*/
+input/
 
+# _____________________________________________________________________________
+# Tools
 # IDEs paths / files
 *.code-workspace
+*.swp
+*.swo
 .idea/
 .vscode/
+.DS_Store
+.project
+.pydevproject
+.settings/
 
-# _____________________________________________________________________________
-# Development
-# - Terraform
-**/.terraform/*
-*.tfstate
-*.tfstate.*
-*.tfvars
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-.terraformrc
-terraform.rc
-
-# - Terragrunt
-**/.terragrunt-cache/*
-
-# - Antlr
-.antlr/
-
-# _____________________________________________________________________________
-# Python
-# - Common build files
+# Testing and coverage
 *.cover
-.pytest_cache/
-.nox/
-.tox/
 .cache
 .coverage
-.coverage.*
+.pytest_cache/
+.tox/
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.nox/
 
 # - Python byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cd]
+*.py[cod]
 *$py.class
 *.so
+**/__pycache__/
 
 # - Python Environments
 .env/
 env/
 .venv/
 venv/
+ENV/
+env.bak/
+venv.bak/

@@ -7,7 +7,7 @@ REM Output Python version outside virtual environment
 python.exe --version
 
 REM ___________________________________________________________________________
-REM Create virtural environment
+REM Create virtual environment
 if not exist ".\.venv" (
 echo Creating virtual environment ...
 python.exe -m venv ".\.venv"
@@ -47,12 +47,15 @@ echo %cmd%
 %cmd%
 
 REM ___________________________________________________________________________
-REM Install/Update packeages from requirements
+REM Install/Update packages from requirements
 if not exist "requirements.txt" (
 echo.
 echo "requirements.txt" not found
 goto :eof
 )
+echo ___________________________________________________________________________
+type "requirements.txt"
+echo ___________________________________________________________________________
 
 REM Update using requirements.txt file
 set cmd=python.exe -m pip install --no-color --compile --upgrade-strategy eager --upgrade --requirement requirements.txt

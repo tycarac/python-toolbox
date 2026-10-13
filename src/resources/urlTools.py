@@ -1,9 +1,8 @@
-from collections import namedtuple
 import os
 import re
 import string
+from collections import namedtuple
 from urllib import parse
-
 from .fileTools import sanitize_filepath
 
 # https://tools.ietf.org/html/rfc3986
@@ -96,7 +95,7 @@ def url_split(url: str):
 
 
 # _____________________________________________________________________________
-def url_split_authority(url: str) -> (str, str, str):
+def url_split_authority(url: str) -> tuple[str, str, str]:
     """
     Returns the authority of a URL which is made of the userinfo, the hostname and the port.
     The userinfo and port are optional and a default port is assumed based on the scheme.

@@ -1,38 +1,38 @@
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Any, IO
 
 
+# _____________________________________________________________________________
 class Tee(object):
-    def __init__(self, filename=None, mode='wt', flush=True):
-        if filename is None:
-            filename = Path(sys.argv[0]).stem + '.tee.log'
-        self.filename = filename
+    def __init__(self, filename=None, mode: str = 'wt', flush: bool = True) -> None:
+        self.filename = filename if filename else Path(sys.argv[0]).stem + '.tee.log'
         self.file = open(filename, mode, flush)
         self.stdout = sys.stdout
         sys.stdout = self
         self.stderr = sys.stderr
         sys.stderr = self
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         pass
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.close()
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: Any) -> None:
         self.close()
 
-    def write(self, data):
+    def write(self, data: IO[bytes]) -> None:
         if self.file:
             self.file.write(data)
             self.file.flush()
         self.stdout.write(data)
         sys.stdout.flush()
 
-    def flush(self):
+    def flush(self) -> None:
         self.file.flush()
 
-    def close(self):
+    def close(self) -> None:
         if self.file:
             try:
                 self.file.close()

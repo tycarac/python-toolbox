@@ -1,0 +1,93 @@
+[project]
+name = "python-toolbox"
+version = "0.1.1"
+description = "Toolbox Python code"
+readme = "README.md"
+requires-python = '>=3.14,<3.15'
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "beautifulsoup4",
+    'python-dateutil',
+    'lxml',
+    'platformdirs',
+    'pytest',
+    'urllib3',
+]
+
+[build-system]
+requires = ['uv_build>=0.13.0,<0.14']
+build-backend = 'uv_build'
+
+[poject.scripts]
+setup-browser = 'playwright install --with-deps chromium'
+
+[tool.uv.build-backend]
+module-name = ['toolbox', 'resources']
+
+[dependency-groups]
+lint = ['ruff',
+]
+
+type = ['ty',
+    'types-python-dateutil',
+]
+
+test = ['pytest',
+]
+
+dev = [{ include-group = 'lint' },
+    { include-group = 'type' },
+    { include-group = 'test' },
+]
+
+[tool.uv]
+upgrade = true
+
+[tool.uv.audit]
+malware-check = true
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ['E4', # Import and structural pycodestyle errors
+    'E7', # Statement errors
+    'E9', # Runtime/syntax-like errors
+    'F', # Pyflakes
+    'I', # Import sorting
+    'B', # flake8-bugbear
+    'UP', # Modern Python syntax
+    'SIM', # Simplification
+    'RUF', # Ruff-specific correctness rules
+    'ANN', # Type annotation policy
+]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
+[tool.ty.src]
+include = ['toolbox',
+    'resources',
+    'tests',
+]
+
+[tool.ty.rules]
+dynamic-function-decorator-return = 'error'
+missing-type-argument = 'error'
+possibly-unresolved-reference = 'warn'
+unsound-return-statement = 'error'
+unused-ignore-comment = 'error'
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+docstring-code-format = true
+quote-style = 'single'
+indent-style = 'space'
+
+[tool.pytest]
+minversion = '9.1'
+testpaths = ['tests']
+addopts = ['-ra',
+    '--import-mode=importlib',
+]

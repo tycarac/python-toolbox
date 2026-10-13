@@ -1,9 +1,9 @@
-from datetime import timedelta, datetime
 import os
-from typing import Tuple
 import unicodedata
-from urllib import parse
 import zipfile
+from datetime import datetime, timedelta
+from io import TextIOWrapper
+from urllib import parse
 
 # Filename constants
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
@@ -94,7 +94,7 @@ def delete_empty_directories(path: os.PathLike) -> list[str]:
 
 
 # _____________________________________________________________________________
-def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (list[str], list[str]):
+def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> tuple[list[str], list[str]]:
     """Deletes all empty child folders under a parent folder
     Notes:
      - times are UTC
@@ -135,7 +135,7 @@ def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (list
 
 
 # _____________________________________________________________________________
-def open_files(path: os.PathLike) -> Tuple[str, int]:
+def open_files(path: os.PathLike) -> tuple[str, TextIOWrapper]:
     """Iterate over a root path returning an open file handle for each file found - including file in archives
     :return: Tuple[filename:str,file handle:int]
     """
@@ -150,9 +150,9 @@ def open_files(path: os.PathLike) -> Tuple[str, int]:
                 with zipfile.ZipFile(file_path) as zh:
                     # Iterate over files inside archive
                     for zipinfo in filter(lambda z: not z.is_dir(), zh.infolist()):
-                        with zh.open(zipinfo) as file_handle:
-                            yield f'{rel_file_path}|{zipinfo.filename}', file_handle
+                        with zh.open(zipinfo, 'r') as file_handle:
+                            yield (f'{rel_file_path}|{zipinfo.filename}', file_handle)
             else:
                 # Yield non-archive file
                 with open(file_path) as fh:
-                    yield rel_file_path, fh
+                    yield (rel_file_path, fh)

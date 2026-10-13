@@ -5,27 +5,28 @@ over use of stack space.
 
 JSON Specification: https://tools.ietf.org/html/rfc8259
 """
-from dataclasses import dataclass
+import typing
 from collections import deque
+from dataclasses import dataclass
+from typing import Final, Any
 
-_JSON_TYPES = {
-    # structure
-    dict: 'object',
-    list: 'array',
+_JSON_TYPES : Final[dict[Any, str]] = {
     # string
     str: 'string',
-    # Literal
-    bool: 'boolean',
-    type(None): 'null',
     # number
     int: 'number<int>',
     float: 'number<real>',
+    # Literal
+    bool: 'boolean',
+    type(None): 'null',
+    # structure
+    dict: 'object',
+    list: 'array'
 }
 
 
-@dataclass
+@dataclass(slots=True)
 class Node:
-    __slots__ = ['name', 'names', 'type', 'value']
     name: str
     names: list[str]
     type: _JSON_TYPES
@@ -34,8 +35,8 @@ class Node:
 
 # _____________________________________________________________________________
 def json_visit(data, process_node=lambda x: x):
-    def __node_type(value):
-        return _JSON_TYPES[type(value)]
+    def __node_type(node_value):
+        return _JSON_TYPES[type(node_value)]
 
     array_name = '*'
     array_name_list = [array_name]
@@ -48,8 +49,9 @@ def json_visit(data, process_node=lambda x: x):
         # Process children (if any)
         value = node.value
         if type(value) is dict:
-            children = [Node(n, node.names + [n], __node_type(v), v) for n, v in value.items()]
+            children = [Node(n, node.names + [n], __node_type(v), v) for n, v in typing.cast(dict, value).items()]
             to_visit.extendleft(reversed(children))
         elif type(value) is list:
-            children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in value]
+            children = [Node(array_name, node.names + array_name_list, __node_type(v), v) for v in
+                        typing.cast(list, value)]
             to_visit.extendleft(reversed(children))
