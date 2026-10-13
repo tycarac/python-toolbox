@@ -1,30 +1,58 @@
 from pathlib import Path
 import re
 import os.path
-from typing import List, Set, Any
+from typing import List, Set, Any, Collection, Iterable
 
 
 # _____________________________________________________________________________
-def filter_paths_by_regex(directory: os.PathLike,
-            file_pattern:str = None, inc_regex_str: List[str] = None, exc_regex_str: List[str] = None):
-    file_filter = file_pattern if not None else '*.*'
-    paths = {p.name: p for p in Path(directory).rglob(file_filter)}
-    return filter_by_regex(paths, inc_regex_str, exc_regex_str)
+def filter_paths_by_regex(path: os.PathLike, inc_regexes: List[str] = None, exc_regexes: List[str] = None,
+            file_filter:str = '*.*'):
+    """Use recursive glob to collect the files in a named path and then apply regex include and exclude filters.
+    Notes:
+        1. Prefilter can be applied to glob function to reduce size of data processed
+        2. Regex expressions only applied to filename and not path (Use of dict).
+    :param path:
+    :param file_filter: glob
+    :param inc_regexes:
+    :param exc_regexes:
+    :return: iterator of applied filters
+    """
+    inc_cmpl = [re.compile(regex, re.IGNORECASE) for regex in inc_regexes] if inc_regexes else None
+    exc_cmpl = [re.compile(regex, re.IGNORECASE) for regex in exc_regexes] if exc_regexes else None
+
+    for p in Path(path).resolve().rglob(file_filter):
+        if (not inc_cmpl or any(r.search(p.name) for r in inc_cmpl)) \
+                    and not (exc_cmpl and any(r.search(p.name) for r in exc_cmpl)):
+            yield p
 
 
 # _____________________________________________________________________________
-def filter_by_regex(collect: List[Any] or Set[Any], inc_regex_str: List[str] = None, exc_regex_str: List[str] = None):
-    if inc_regex_str:
-        inc_regex = [re.compile(regex, re.IGNORECASE) for regex in inc_regex_str]
-        inc_collect = [p for p in collect if any(r.match(p) for r in inc_regex)]
-    else:
-        inc_collect = collect
+def filter_by_regex(itr: Iterable, inc_regexes: List[str] = None, exc_regexes: List[str] = None):
+    """Filter the input iterable against two lists of regex (regular expressions).  First, keep
+    collection items with any regex match in the include regex list.  Then second, remove
+    collection items with any regex match in the exclude regex list.
 
-    if exc_regex_str:
-        exc_regex = [re.compile(regex, re.IGNORECASE) for regex in exc_regex_str]
-        exc_collect = sorted([p for p in inc_collect if any(r.match(p.name) for r in exc_regex)])
-    else:
-        exc_collect = []
+    Notes:
+    1. Using iterators frees fuction to work with different collection types
+    2. Reference to input collection is returned, not a copy, if there are no input filters
+    3. Either or both regex lists can be null or empty
+    4. Regex expressions are compiled to ignore case and compilations are not cached
+    :param itr: iterator input to be filtered
+    :param inc_regexes:
+    :param exc_regexes:
+    :return: iterator of applied filters
+    """
+    inc_cmpl = [re.compile(regex, re.IGNORECASE) for regex in inc_regexes] if inc_regexes else None
+    exc_cmpl = [re.compile(regex, re.IGNORECASE) for regex in exc_regexes] if exc_regexes else None
 
-    out_collect = [p1 for p1 in inc_collect if p1 not in exc_collect]
-    return out_collect, exc_collect
+    if inc_cmpl and exc_cmpl:
+        fitr = filter(lambda x: (any(r.search(x) for r in inc_cmpl) and not (any(r.search(x) for r in exc_cmpl))), itr)
+    elif inc_cmpl:
+        fitr = filter(lambda x: any(r.search(x) for r in inc_cmpl), itr)
+    elif exc_cmpl:
+        fitr = filter(lambda x: not any(r.search(x) for r in exc_cmpl), itr)
+    else:
+        fitr = itr
+
+    for x in fitr:
+        yield x
