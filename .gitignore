@@ -26,11 +26,15 @@ __pycache__/
 *.py[cd]
 *$py.class
 
-# Development Tools
+# Development IDEs
 .idea/
 .vscode/
+*.code-workspace
+
+# Development Tools
 .terraform/
 .terragrunt-cache/
+.antlr/
 
 # Python
 .pytest_cache/
