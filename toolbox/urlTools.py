@@ -2,6 +2,7 @@ from collections import namedtuple
 import os
 import re
 import string
+from typing import List
 from urllib import parse
 
 from .fileTools import sanitize_filepath
@@ -28,9 +29,16 @@ def url_join(url: str, /, *paths: str) -> str:
 
     Does not validate URL
     """
-    u = url.strip(_URL_STRIP_CHARS)
-    p = '/'.join(map(lambda x: x.strip(_URL_STRIP_CHARS), filter(lambda p: p, paths)))
-    return f'{u}/{p}' if p and u else f'{u}{p}'
+    parts = [u] if (u := url.rstrip(_URL_STRIP_CHARS)) else []
+    paths = [y for z in paths if (y := z.strip())]
+    s = '/' if not u and len(paths) and (len(paths[0]) == 0 or paths[0][0] == '/') else ''
+    if p := [y for z in paths if (y := z.strip(_URL_STRIP_CHARS))]:
+        parts.extend(p)
+        e = '/' if len(parts) and len(paths) and (len(paths[-1]) == 0 or paths[-1][-1] == '/') else ''
+        a = f'{s}{"/".join(parts)}{e}'
+        return f'{s}{"/".join(parts)}{e}'
+    else:
+        return u + '/' if u else s
 
 
 # _____________________________________________________________________________
@@ -39,9 +47,9 @@ def url_path_suffix(url: str) -> str:
     The final component's last suffix, if any.  Includes leading period (eg: .'html').
 
     Parsing:
-    1. Use urlparse to remove any trailing URL parameters.  Note a) "path" will contain the hostname when the URL
-    does not start with '//' and b) "path" can be empty string but never None.
-    2. Strip traling URL separator '/' and remove LHS far right URL separator
+    1. Use urlparse to remove any trailing URL parameters.  Note a) "path" will contain the hostname
+    when the URL does not start with '//' and b) "path" can be empty string but never None.
+    2. Strip trailing URL separator '/' and remove LHS far right URL separator
     """
     path = parse.urlparse(parse.unquote(url)).path.strip()
     if (j := path.rfind('.', path.rfind('/') + 1, len(path) - 1)) >= 0:
@@ -55,7 +63,7 @@ def url_to_pathname(url: str) -> str:
     :param url: string
     :return: sanitized filename
 
-    RFC 8089: The "file" URI Scheme
+    RFC 8089: The "file" URI scheme
     """
     urlp = url_split(url)
     st = url_join(url_split_authority(urlp.authority).host, urlp.path) if urlp.authority else urlp.path

@@ -85,14 +85,26 @@ def test_url_suffix(given, expected):
 
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
-    (['https://abc.info/', '/def/'], 'https://abc.info/def'),
-    (['https://abc.org/', '/def/', '/gh/'], 'https://abc.org/def/gh'),
-    (['ftps://abc.int', 'def', 'gh'], 'ftps://abc.int/def/gh'),
-    (['abc.co.uk/', '/d/', '/g/'], 'abc.co.uk/d/g'),
-    (['abc.edu/', '/'], 'abc.edu'),
-    (['abc.net', ''], 'abc.net'),
-    (['', ''], '')
-
+    (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
+    (['http://abc.info', 'def'], 'http://abc.info/def'),
+    (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
+    (['http://abc.info/', '/def/'], 'http://abc.info/def/'),
+    (['file://abc.org', 'def', 'gh'], 'file://abc.org/def/gh'),
+    (['file://abc.org/', '/def/', '/gh/'], 'file://abc.org/def/gh/'),
+    (['file://abc.org/', '/def/', '/gh/', '/ij'], 'file://abc.org/def/gh/ij'),
+    (['ftps://abc.org', 'def', 'gh', 'ij'], 'ftps://abc.org/def/gh/ij'),
+    (['ftps://abc.org', 'def', 'gh', 'ij/'], 'ftps://abc.org/def/gh/ij/'),
+    (['abc.edu/', '/'], 'abc.edu/'),
+    (['abc.net', ''], 'abc.net/'),
+    (['abc.net'], 'abc.net/'),
+    (['', '/a/'], '/a/'),
+    (['', '/a'], '/a'),
+    (['', 'a/'], 'a/'),
+    (['', '/'], '/'),
+    (['', ' ', ' '], ''),
+    (['', '', ''], ''),
+    (['', ''], ''),
+    ([''], '')
 ])
 def test_url_join(given, expected):
     assert urlTools.url_join(given[0], *given[1:]) == expected
