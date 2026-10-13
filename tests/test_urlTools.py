@@ -30,6 +30,8 @@ _logger = logging.getLogger(__name__)
     ('f:g.h:81/j?z=y#1', urlTools.UrlParts('f', 'g.h:81', '/j', 'z=y', '1')),
     ('f:i@g.h:81/j#1', urlTools.UrlParts('f', 'i@g.h:81', '/j', None, '1')),
 
+    ('k://', urlTools.UrlParts('k', '', '', None, None)),
+    ('k:///', urlTools.UrlParts('k', '', '/', None, None)),
     ('k://l', urlTools.UrlParts('k', 'l', '', None, None)),
     ('k://l.m', urlTools.UrlParts('k', 'l.m', '', None, None)),
     ('k://l.m/', urlTools.UrlParts('k', 'l.m', '/', None, None)),
@@ -40,6 +42,13 @@ _logger = logging.getLogger(__name__)
     ('k://l.m:81/o?z=y', urlTools.UrlParts('k', 'l.m:81', '/o', 'z=y', None)),
     ('k://n@l.m:81/o?z=y#1', urlTools.UrlParts('k', 'n@l.m:81', '/o', 'z=y', '1')),
     ('k://n@l.m:81/#1', urlTools.UrlParts('k', 'n@l.m:81', '/', None, '1')),
+
+    ('file://localhost/etc/fstab', urlTools.UrlParts('file', 'localhost', '/etc/fstab', None, None)),
+    ('file://127.0.0.1/etc/fstab', urlTools.UrlParts('file', '127.0.0.1', '/etc/fstab', None, None)),
+    ('file:///etc/fstab', urlTools.UrlParts('file', '', '/etc/fstab', None, None)),
+    ('file://localhost/c$/Windows/win.ini', urlTools.UrlParts('file', 'localhost', '/c$/Windows/win.ini', None, None)),
+    ('file:///c:/Windows/win.ini', urlTools.UrlParts('file', '', '/c:/Windows/win.ini', None, None)),
+
     ('', urlTools.UrlParts('', '', '', None, None))
     ])
 def test_url_split(given, expected):
@@ -48,11 +57,13 @@ def test_url_split(given, expected):
 
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
+    ('c@a.b:82', urlTools.UrlAuthorityParts('c', 'a.b', 82)),
+
     ('a', urlTools.UrlAuthorityParts(None, 'a', None)),
     ('a.b', urlTools.UrlAuthorityParts(None, 'a.b', None)),
     ('a.b:81', urlTools.UrlAuthorityParts(None, 'a.b', 81)),
     ('c@a.b', urlTools.UrlAuthorityParts('c', 'a.b', None)),
-    ('c@a.b:81', urlTools.UrlAuthorityParts('c', 'a.b', 81)),
+    ('c@a.b:82', urlTools.UrlAuthorityParts('c', 'a.b', 82)),
     ('', urlTools.UrlAuthorityParts(None, '', None))
     ])
 def test_url_split_authority(given, expected):
@@ -61,43 +72,20 @@ def test_url_split_authority(given, expected):
 
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
-    ('abc.com', '.com'),
-    ('abc.edu/', ''),
-    ('abc.org/a.json', '.json'),
-    ('abc.info/images.small/i.png', '.png'),
-    ('abc.net/p', ''),
-    ('abc.org/text.txt/en', ''),
-    ('//abc.gov', ''),
-    ('//abc.co/', ''),
-    ('abc.int/.', ''),
-    ('/.', ''),
-    ('/.t', '.t'),
-    ('/s.t', '.t'),
-    ('.txt', '.txt'),
-    ('b.html', '.html'),
-    ('a.b.xml', '.xml'),
-    ('/ ec2 /?id = docs_gateway', ''),
-    ('', '')
-    ])
-def test_url_suffix(given, expected):
-    assert urlTools.url_split_authority(given) == expected
-
-
-# _____________________________________________________________________________
-@pytest.mark.parametrize('given, expected', [
     (['http://abc.info/', '/def/'], 'http://abc.info/def/'),
     (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
-    (['http://abc.info', 'def'], 'http://abc.info/def'),
+    (['http://abc.info/', 'def'], 'http://abc.info/def'),
     (['http://abc.info/', 'def/'], 'http://abc.info/def/'),
     (['http://abc.info/', '/def/'], 'http://abc.info/def/'),
     (['file://abc.org', 'def', 'gh'], 'file://abc.org/def/gh'),
-    (['file://abc.org/', '/def/', '/gh/'], 'file://abc.org/def/gh/'),
-    (['file://abc.org/', '/def/', '/gh/', '/ij'], 'file://abc.org/def/gh/ij'),
+    (['file://abc.org', '/def/', '/gh/'], 'file://abc.org/def/gh/'),
+    (['file://abc.org', '/def/', '/gh/', '/ij'], 'file://abc.org/def/gh/ij'),
     (['ftps://abc.org', 'def', 'gh', 'ij'], 'ftps://abc.org/def/gh/ij'),
     (['ftps://abc.org', 'def', 'gh', 'ij/'], 'ftps://abc.org/def/gh/ij/'),
     (['abc.edu/', '/'], 'abc.edu/'),
-    (['abc.net', ''], 'abc.net/'),
-    (['abc.net'], 'abc.net/'),
+    (['abc.edu', '/'], 'abc.edu/'),
+    (['abc.net'], 'abc.net'),
+    (['abc.net', ''], 'abc.net'),
     (['a', 'b'], 'a/b'),
     (['a', '/b'], 'a/b'),
     (['a', 'b/'], 'a/b/'),
@@ -106,6 +94,8 @@ def test_url_suffix(given, expected):
     (['', '/a'], '/a'),
     (['', 'a/'], 'a/'),
     (['', '/'], '/'),
+    (['/', '/'], '/'),
+    (['/', ''], '/'),
     (['', ' ', ' '], ''),
     (['', '', ''], ''),
     (['', ''], ''),
@@ -145,10 +135,11 @@ def test_fail_url_to_pathname(given, expected):
 
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
-    ('abc.com', '.com'),
+    ('abc.net', ''),
     ('abc.edu/', ''),
     ('abc.org/a.json', '.json'),
     ('abc.info/images.small/i.png', '.png'),
+    ('abc.info/images.small/i.greyscale.png', '.png'),
     ('abc.net/p', ''),
     ('abc.org/text.txt/en', ''),
     ('//abc.gov', ''),
@@ -157,10 +148,12 @@ def test_fail_url_to_pathname(given, expected):
     ('/.', ''),
     ('/.t', '.t'),
     ('/s.t', '.t'),
-    ('.txt', '.txt'),
-    ('b.html', '.html'),
-    ('a.b.xml', '.xml'),
-    ('/ ec2 /?id = docs_gateway', ''),
+    ('.txt', ''),
+    ('b.html', ''),
+    ('/ ec /?id = docs_gateway', ''),
+    ('/ ec / c.pdf ? id = docs_gateway', '.pdf'),
+    ('/ ec /?file = file.txt', ''),
+    ('https://docs.abc.com/latest/page.html?icmpid=docs/release-notes.rss', '.html'),
     ('', '')
     ])
 def test_url_suffix(given, expected):
