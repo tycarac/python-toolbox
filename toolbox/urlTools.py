@@ -2,10 +2,9 @@ from collections import namedtuple
 import os
 import re
 import string
-from typing import Sequence
 from urllib import parse
 
-from .fileTools import sanitize_filepath, _FOLDER_SEPARATOR_CHARS
+from .fileTools import sanitize_filepath
 
 # https://tools.ietf.org/html/rfc3986
 _URN_GENERIC_DELIMITERS = ':/?#[]@'
@@ -83,34 +82,6 @@ def url_split(url: str):
             path = grp
         query = match.group(4)
         fragment = match.group(5)
-
-    return UrlParts(scheme, authority, path, query, fragment)
-
-
-# _____________________________________________________________________________
-def url_split1(url: str):
-    """Parse a URL into five parts of: <scheme>://<authority>/<path>?<query>#<fragment>
-    :param url: URL
-    :return: tuple: (scheme, authority, path, query, fragment)
-    """
-    scheme, authority, path, query, fragment = '', '', '', None, None
-    if (loc := url.find(':')) > 0:
-        # Extract scheme
-        scheme = url[:loc].lower()
-        url = url[loc+1:]
-    if url[:2] == '//':
-        # Extract authority
-        loc = len(url)
-        for ch in _URN_AUTHORITY_DELIMITERS:
-            if (i := url.find(ch, 2)) > 0:
-                loc = min(loc, i)
-        authority, path = url[2:loc], url[loc:]
-    else:
-        path = url
-    if '#' in path:
-        path, fragment = path.split('#', 1)
-    if '?' in path:
-        path, query = path.split('?', 1)
 
     return UrlParts(scheme, authority, path, query, fragment)
 

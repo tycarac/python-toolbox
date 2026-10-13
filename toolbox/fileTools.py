@@ -1,5 +1,4 @@
 from datetime import timedelta, date, datetime, time
-import io
 import os
 from pathlib import Path
 import string
@@ -8,40 +7,74 @@ import unicodedata
 from urllib import parse
 import zipfile
 
+# Filename constants
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-_FOLDER_SEPARATOR_CHARS = ['\\', '/']
-_DASH_CHARS = ['\u2012', '\u2013', '\u2014', '\u2015', '\u2053']
-_WINDOWS_INVALID_CHARS = [':', '*', '|', '?', '>', '<', '"']
+_FOLDER_SEPARATOR_CHARS = '\\/'
+_DASH_CHARS = '\u2012\u2013\u2014\u2015\u2053'
+_WINDOWS_INVALID_CHARS = ':*|?><"'
 _WINDOWS_INVALID_FILENAME_CHARS = _WINDOWS_INVALID_CHARS + _FOLDER_SEPARATOR_CHARS
-_FILENAME_REPLACE_CHARS = _WINDOWS_INVALID_FILENAME_CHARS + _DASH_CHARS
-_PATHNAME_REPLACE_CHARS = _WINDOWS_INVALID_CHARS + _DASH_CHARS
-_URL_STRIP_CHARS = string.whitespace + '/'
-_SPACE_CHARS = ['\u00A0', '\u2002', '\u2003']  # Does not include HTML specialized spaces
+_FILENAME_REPLACE_CHARS = _WINDOWS_INVALID_CHARS + _DASH_CHARS
+_PATHNAME_REPLACE_CHARS = _FILENAME_REPLACE_CHARS + _FOLDER_SEPARATOR_CHARS
 
 
 # _____________________________________________________________________________
 def file_suffix(fp: str) -> str:
-    """Extract the file suffix from a path
-
+    """Extract the file suffix from a pathname
+    Extension is the last dot to the end, ignoring leading dot.
     :param fp:
     :return: file suffix or empty string
     """
-    loc = max(fp.rfind('\\'), fp.rfind('/')) + 1
+    loc = max(fp.rfind('\\'), fp.rfind('/')) + 1  # Find to avoid matching dot in path parent
     if (pos := fp.rfind('.', loc)) > 0 and fp[loc] != '.':
         return fp[pos:]
     return ''
 
 
 # _____________________________________________________________________________
-def is_parent(parent: Path, path: Path) -> bool:
+def is_parent(parent: str, path: str, /) -> bool:
     """Returns True is path has the same parent path as parent
-    :param parent:
-    :param path:
+    :param parent: string
+    :param path: string
     :return: True if parent path is contained in path
     """
-    return str(path.resolve()).startswith(str(parent.resolve()))
+    return os.path.normpath(path).startswith(os.path.normpath(parent))
 
 
+# _____________________________________________________________________________
+def sanitize_filepath(filename: str, /, replace_dot=False, replace_folder_sep=False) -> str:
+    """Returns MS-Windows sanitized filepath using ASCII character set
+    :param filepath: string
+    :param replace_dot: bool
+    :param replace_folder_sep: bool
+    :return: sanitized filepath
+
+    Remove URL character encodings and leading/trailing whitespaces.
+    Replace whitespaces with '-' character (for Linux ease-of-use)
+    Convert Unicode dashes to ASCII dash, but other unicode characters removed.
+    Optionally, remove dot character but not from leading
+    No checks on None, for leading/trailing dots, or filename length.
+    """
+    join_ch = ' ' if os.name == 'nt' else '-'
+    fname = join_ch.join(parse.unquote(filename).split())
+
+    # Replace invalid characters with '-' and replace unicode dashes with ASCII '-'
+    for ch in _FILENAME_REPLACE_CHARS:
+        if ch in fname:
+            fname = fname.replace(ch, '-')
+    # Replace folder separators as instructed
+    for ch in _FOLDER_SEPARATOR_CHARS:
+        if (replace_folder_sep or ch != os.sep) and ch in fname:
+            fname = fname.replace(ch, '-')
+    if not fname.isascii():
+        fname = unicodedata.normalize('NFKD', fname).encode('ASCII', 'ignore').decode('ASCII')
+    if replace_dot and fname.find('.', 1) > 0:
+        fname = fname[0] + fname[1:].replace('.', '-')
+
+    return fname
+
+
+# =============================================================================
+# File operations
 # _____________________________________________________________________________
 def delete_empty_directories(path: os.PathLike) -> List[str]:
     """Deletes all empty child folders under a parent folder
@@ -63,7 +96,7 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
 
 
 # _____________________________________________________________________________
-def delete_empty_old_files(path: os.PathLike, age: timedelta = None) -> (List[str], List[str]):
+def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (List[str], List[str]):
     """Deletes all empty child folders under a parent folder
     :param path: parent folder
     :param age:
@@ -94,87 +127,6 @@ def delete_empty_old_files(path: os.PathLike, age: timedelta = None) -> (List[st
                         errors.append(dir)
 
     return deleted_files, deleted_folders, errors
-
-
-# _____________________________________________________________________________
-def sanitize_filename(filename: str, replace_dot=False) -> str:
-    """Returns MS-Windows sanitized filename using ASCII character set
-    :param filename: string
-    :param replace_dot: bool
-    :return: sanitized filename
-
-    Remove URL character encodings and leading/trailing whitespaces.
-    Replace whitespaces with '-' character (for Linux ease-of-use)
-    Convert Unicode dashes to ASCII dash, but other unicode characters removed.
-    Optionally, remove dot character but not from leading
-    No checks on None, for leading/trailing dots, or filename length.
-    """
-    join_ch = ' ' if os.name == 'nt' else '-'
-    fname = join_ch.join(parse.unquote(filename).split())
-    for ch in _FILENAME_REPLACE_CHARS:
-        if ch in fname:
-            fname = fname.replace(ch, '-')
-    if not fname.isascii():
-        fname = unicodedata.normalize('NFKD', fname).encode('ASCII', 'ignore').decode('ASCII')
-    if replace_dot and fname.find('.', 1) > 0:
-        fname = fname[0] + fname[1:].replace('.', '-')
-
-    return fname
-
-
-# _____________________________________________________________________________
-def join_urlpath(url, *paths: str) -> str:
-    """Returns URL by combining url with each of the arguments in turn
-    :param url: base URL
-    :param paths: paths to be added
-    :return: URL
-
-    Does not validate URL
-    """
-    u = url.strip(_URL_STRIP_CHARS)
-    p = '/'.join(map(lambda x: x.strip(_URL_STRIP_CHARS), paths))
-    return f'{u}/{p}' if p else u
-
-
-# _____________________________________________________________________________
-def urlpath_to_pathname(url: str) -> str:
-    """Returns MS-Windows sanitized filepath from a URL
-    :param url: string
-    :return: sanitized filename
-
-    RFC 8089: The "file" URI Scheme
-    """
-    urlp = parse.urlparse(' '.join(parse.unquote(url).strip().split()))
-    path = urlp.path.strip(_URL_STRIP_CHARS).replace('/', '\\')
-
-    if not urlp.hostname:
-        pathname = path
-    else:
-        pathname = f'{urlp.hostname}\\{path}' if path else urlp.hostname
-
-    for ch in _PATHNAME_REPLACE_CHARS:
-        if ch in pathname:
-            pathname = pathname.replace(ch, '-')
-    if not pathname.isascii():
-        pathname = unicodedata.normalize('NFKD', pathname).encode('ASCII', 'ignore').decode('ASCII')
-
-    return pathname
-
-
-# _____________________________________________________________________________
-def url_suffix(url: str) -> str:
-    """
-    The final component's last suffix, if any.  Includes leading period (eg: .'html').
-
-    Parsing:
-    1. Use urlparse to remove any trailing URL parameters.  Note a) "path" will contain the hostname when the URL
-    does not start with '//' and b) "path" can be empty string but never None.
-    2. Strip traling URL separator '/' and remove LHS far right URL separator
-    """
-    path = parse.urlparse(parse.unquote(url)).path.strip()
-    if (j := path.rfind('.', path.rfind('/') + 1, len(path) - 1)) >= 0:
-        return path[j:]
-    return ''
 
 
 # _____________________________________________________________________________
