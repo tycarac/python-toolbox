@@ -44,7 +44,7 @@ def json_visit(data, process_node=lambda x: x):
     aname = '*'
     aname_list = [aname]
     to_visit = deque([Node('', [], __node_type(data), data)])
-    while True:
+    while to_visit:
         node = to_visit.popleft()
         yield process_node(node) if process_node else node
 
@@ -56,5 +56,3 @@ def json_visit(data, process_node=lambda x: x):
         elif type(node.value) is list:
             children = [Node(aname, node.names + aname_list, __node_type(v), v) for v in iter(node.value)]
             to_visit.extendleft(reversed(children))
-        if not to_visit:
-            break
