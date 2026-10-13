@@ -1,2 +1,2 @@
 # python-toolbox
-Useful python code for use in projects
+Useful code snippets for use in Python projects
