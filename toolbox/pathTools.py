@@ -27,7 +27,7 @@ def is_parent(parent: Path, path: Path):
 
 
 # _____________________________________________________________________________
-def __delete_empty_directories(folder):
+def delete_empty_directories(folder):
     """Deletes all empty child folders under a parent folder
     :param folder: parent folder
     :return: List of deleted folders
@@ -41,18 +41,6 @@ def __delete_empty_directories(folder):
                 os.rmdir(name)
 
     return deleted_folders
-
-
-# _____________________________________________________________________________
-def join_url_path(url, *paths):
-    """Returns URL by combining url with each of the arguments in turn
-    :param url: base URL
-    :param paths: paths to be added
-    :return: URL
-
-    Does not validate URL
-    """
-    return '%s/%s' % (url.strip(_URL_STRIP_CHARS), '/'.join(map(lambda x: x.strip(_URL_STRIP_CHARS), paths)))
 
 
 # _____________________________________________________________________________
@@ -71,10 +59,22 @@ def sanitize_filename(filename: str):
             filename = filename.replace(ch, '-')
     if not filename.isascii():
         filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode('ASCII')
-    if len(filename) < 1:
-        raise ValueError('empty string')
 
     return filename
+
+
+# _____________________________________________________________________________
+def join_urlpath(url, *paths):
+    """Returns URL by combining url with each of the arguments in turn
+    :param url: base URL
+    :param paths: paths to be added
+    :return: URL
+
+    Does not validate URL
+    """
+    u = url.strip(_URL_STRIP_CHARS)
+    p = '/'.join(map(lambda x: x.strip(_URL_STRIP_CHARS), paths))
+    return '%s/%s' % (u, p) if p else u
 
 
 # _____________________________________________________________________________
@@ -86,10 +86,10 @@ def urlpath_to_pathname(url: str):
     RFC 8089: The "file" URI Scheme
     """
     urlp = parse.urlparse(' '.join(parse.unquote(url).strip().split()))
-    path = urlp.path.strip(_URL_STRIP_CHARS)
+    path = urlp.path.strip(_URL_STRIP_CHARS).replace('/', '\\')
 
     if path:
-        pathname = (urlp.hostname + '\\' + path if urlp.hostname else path).replace('/', '\\')
+        pathname = '%s\\%s' % (urlp.hostname, path) if urlp.hostname else path
     elif urlp.hostname:
         pathname = urlp.hostname
     else:
@@ -100,7 +100,23 @@ def urlpath_to_pathname(url: str):
             pathname = pathname.replace(ch, '-')
     if not pathname.isascii():
         pathname = unicodedata.normalize('NFKD', pathname).encode('ASCII', 'ignore').decode('ASCII')
-    if len(pathname) < 1:
-        raise ValueError('empty string')
 
     return pathname
+
+
+# _____________________________________________________________________________
+def url_suffix(url: str):
+    """
+    The final component's last suffix, if any.  Includes leading period (eg: .'html').
+
+    To avoid inspecting the hostname
+    """
+    urlp = parse.urlparse(parse.unquote(url))
+    path = urlp.path.strip()
+
+    if 0 <= (i := path.rfind('/')) < len(path):
+        path = path[i + 1:]
+    if 0 <= (j := path.rfind('.')) < len(path) - 1:
+        return path[j:]
+    else:
+        return ''
