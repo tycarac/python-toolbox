@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from toolbox import urlTools
+from resources import urlTools
 
 _logger = logging.getLogger(__name__)
 

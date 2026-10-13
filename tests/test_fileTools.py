@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import pytest
 
-from toolbox import fileTools
+from resources import fileTools
 
 _logger = logging.getLogger(__name__)
 
