@@ -1,8 +1,11 @@
+import io
 import os
 from pathlib import Path
 import string
+from typing import Tuple
 import unicodedata
 from urllib import parse
+import zipfile
 
 # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
 _FOLDER_SEPARATOR_CHARS = ['\\', '/']
@@ -117,4 +120,35 @@ def url_suffix(url: str):
     path = parse.urlparse(parse.unquote(url)).path.strip()
     if (j := path.rfind('.', path.rfind('/') + 1, len(path) - 1)) >= 0:
         return path[j:]
+    return ''
+
+
+# _____________________________________________________________________________
+def open_files(path: os.PathLike) -> Tuple[str, int]:
+    """Iterate over a root path returning an open file handle for each file found - including file in archives
+    :return: Tuple[filename:str,file handle:int]
+    """
+    for root, _, filenames in os.walk(str(path)):
+        # Iterate over files found in directory
+        for filename in filenames:
+            path = Path(root, filename).resolve()
+            rel_path_str = str(path.relative_to(path))
+
+            # Test if file is an archive
+            if file_suffix(filename) in ['.zip', '.gzip', '.gz']:
+                with zipfile.ZipFile(io.BytesIO(path.read_bytes())) as zp:
+                    # Iterate over files inside archive
+                    for zipinfo in filter(lambda z: not z.is_dir(), zp.infolist()):
+                        with zp.open(zipinfo) as file_handle:
+                            yield f'{rel_path_str}|{zipinfo.filename}', file_handle
+            else:
+                # Yield non-archive file
+                with open(path) as file_handle:
+                    yield rel_path_str, file_handle
+
+
+# _____________________________________________________________________________
+def file_suffix(fp: str):
+    if (j := fp.rfind('.', max(fp.rfind('\\'), fp.rfind('/')) + 1)) >= 0:
+        return fp[j:]
     return ''
