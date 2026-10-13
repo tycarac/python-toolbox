@@ -12,6 +12,7 @@ _WINDOWS_INVALID_FILENAME_CHARS = _WINDOWS_INVALID_CHARS + _FOLDER_SEPARATOR_CHA
 _FILENAME_REPLACE_CHARS = _WINDOWS_INVALID_FILENAME_CHARS + _DASH_CHARS
 _PATHNAME_REPLACE_CHARS = _WINDOWS_INVALID_CHARS + _DASH_CHARS
 _URL_STRIP_CHARS = string.whitespace + '/'
+_SPACE_CHARS = ['\u00A0', '\u2002', '\u2003']  # Does not include HTML specialized spaces
 
 
 # _____________________________________________________________________________
