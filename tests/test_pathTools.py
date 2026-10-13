@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
     ('WordPress:%20Best%20Practices', 'WordPress- Best Practices'),
     ('AWS \u2013 Operational Excellence Pillar', 'AWS - Operational Excellence Pillar'),
     ('AWS Optimizing ASP.NET with C++.pdf', 'AWS Optimizing ASP.NET with C++.pdf'),
+    ('  AWS    Security   Best    Practices  ', 'AWS Security Best Practices'),  # Test multiple spaces
+    ('\t', ''),
     ('', '')
     ])
 def test_sanitize_filename(given, expected):
@@ -24,15 +26,15 @@ def test_sanitize_filename(given, expected):
     (Path('c:\\atemp'), Path('c:\\atemp\\abcd')),
     (Path('e:\\'), Path('e:\\')),
     (Path('c:\\p f\\w nt'), Path('c:\\p f\\w nt\\')),
-    (Path('c:\\p f\\w nt'), Path('c:\\p f\\w nt\\s'))
+    (Path('c:\\p f\\w nt'), Path('c:\\p f\\w nt\\s.txt'))
     ])
 def test_is_parent_path(parent, path):
     assert pathTools.is_parent(parent, path)
 
 
 # _____________________________________________________________________________
-@pytest.mark.parametrize('parent, path',
-    [(Path('c:\\abcd\\efgh'), Path('c:\\temp\\efgh')),
+@pytest.mark.parametrize('parent, path', [
+    (Path('c:\\abcd\\efgh'), Path('c:\\temp\\efgh')),
     (Path('e:\\'), Path('f:\\'))
     ])
 def test_fail_is_parent_path(parent, path):
