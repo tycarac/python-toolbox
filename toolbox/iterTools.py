@@ -1,4 +1,4 @@
-from typing import Iterable, Any, Tuple
+from typing import Iterable
 """
 
 References:
@@ -8,7 +8,7 @@ References:
 
 
 # _____________________________________________________________________________
-def iter_signal_first(it: Iterable[Any]) -> Iterable[Tuple[bool, Any]]:
+def iter_signal_first(it: Iterable[any]) -> Iterable[tuple[bool, any]]:
     iterable = iter(it)
     yield True, next(iterable)
     for val in iterable:
@@ -16,7 +16,7 @@ def iter_signal_first(it: Iterable[Any]) -> Iterable[Tuple[bool, Any]]:
 
 
 # _____________________________________________________________________________
-def iter_signal_last(it: Iterable[Any]) -> Iterable[Tuple[bool, Any]]:
+def iter_signal_last(it: Iterable[any]) -> Iterable[tuple[bool, any]]:
     iterable = iter(it)
     ret_var = next(iterable)
     for val in iterable:
