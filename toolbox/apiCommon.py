@@ -15,7 +15,7 @@ url_client = urllib3.PoolManager(timeout=urllib3.Timeout(total=20.0), retries=ur
 
 # _____________________________________________________________________________
 def fetch_api_credentials(api_client):
-    with Path(Path.home(), '.thystra', 'telstra.api.json').open(mode='rt') as f:
+    with Path(Path.home(), '.thystra', 'shared.api.json').open(mode='rt') as f:
         api_settings = json.load(f)
 
     try:
