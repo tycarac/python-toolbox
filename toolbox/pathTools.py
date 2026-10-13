@@ -20,6 +20,19 @@ _SPACE_CHARS = ['\u00A0', '\u2002', '\u2003']  # Does not include HTML specializ
 
 
 # _____________________________________________________________________________
+def file_suffix(fp: str) -> str:
+    """Extract the file suffix from a path
+
+    :param fp:
+    :return: file suffix or empty string
+    """
+    loc = max(fp.rfind('\\'), fp.rfind('/')) + 1
+    if (pos := fp.rfind('.', loc)) > 0 and fp[loc] != '.':
+        return fp[pos:]
+    return ''
+
+
+# _____________________________________________________________________________
 def is_parent(parent: Path, path: Path) -> bool:
     """Returns True is path has the same parent path as parent
     :param parent:
@@ -37,13 +50,12 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
     """
     deleted_folders = []
     for parent, dirs, _ in os.walk(str(path), topdown=False):
-        for dir in dirs:
-            loc = os.path.join(parent, dir)
-            with os.scandir(loc) as it:
+        for dir in [os.path.join(parent, d) for d in dirs]:
+            with os.scandir(dir) as it:
                 if next(it, None) is None:
                     try:
-                        os.rmdir(loc)
-                        deleted_folders.append(loc)
+                        os.rmdir(dir)
+                        deleted_folders.append(dir)
                     except PermissionError:
                         pass
 
@@ -51,8 +63,7 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
 
 
 # _____________________________________________________________________________
-def delete_undesired_files(path: os.PathLike, age: timedelta = None,
-            include_empty: bool = True) -> (List[str], List[str]):
+def delete_empty_old_files(path: os.PathLike, age: timedelta = None) -> (List[str], List[str]):
     """Deletes all empty child folders under a parent folder
     :param path: parent folder
     :param age:
@@ -64,30 +75,23 @@ def delete_undesired_files(path: os.PathLike, age: timedelta = None,
     deleted_folders, deleted_files, errors = [], [], []
     for parent, dirs, files in os.walk(str(path), topdown=False):
         # Delete empty and old files
-        del_files = set()
-        locs = [os.path.join(parent, f) for f in files]
-        if cutoff:
-            del_files.update(filter(lambda x: os.path.getmtime(x) < cutoff, locs))
-        if include_empty:
-            del_files.update(filter(lambda x: os.path.getsize(x) == 0, locs))
-
-        for file in del_files:
-            try:
-                os.remove(file)
-                deleted_files.append(file)
-            except PermissionError:
-                errors.append(file)
+        for file in [os.path.join(parent, f) for f in files]:
+            if (cutoff and os.path.getmtime(file) < cutoff) or os.path.getsize(file) == 0:
+                try:
+                    os.remove(file)
+                    deleted_files.append(file)
+                except PermissionError:
+                    errors.append(file)
 
         # Delete empty directories
-        for dir in dirs:
-            loc = os.path.join(parent, dir)
-            with os.scandir(loc) as it:
+        for dir in [os.path.join(parent, d) for d in dirs]:
+            with os.scandir(dir) as it:
                 if next(it, None) is None:
                     try:
-                        os.rmdir(loc)
-                        deleted_folders.append(loc)
+                        os.rmdir(dir)
+                        deleted_folders.append(dir)
                     except PermissionError:
-                        errors.append(loc)
+                        errors.append(dir)
 
     return deleted_files, deleted_folders, errors
 
@@ -195,16 +199,3 @@ def open_files(path: str or os.PathLike) -> Tuple[str, int]:
                 # Yield non-archive file
                 with open(path) as file_handle:
                     yield rel_path_str, file_handle
-
-
-# _____________________________________________________________________________
-def file_suffix(fp: str) -> str:
-    """Extract the file suffix from a path
-
-    :param fp:
-    :return: file suffix or empty string
-    """
-    loc = max(fp.rfind('\\'), fp.rfind('/')) + 1
-    if (pos := fp.rfind('.', loc)) > 0 and fp[loc] != '.':
-        return fp[pos:]
-    return ''
