@@ -2,7 +2,6 @@ from collections import namedtuple
 import os
 import re
 import string
-from typing import List
 from urllib import parse
 
 from .fileTools import sanitize_filepath

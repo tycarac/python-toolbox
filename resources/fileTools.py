@@ -1,6 +1,6 @@
-from datetime import timedelta, date, datetime, time
+from datetime import timedelta, datetime
 import os
-from typing import List, Tuple
+from typing import Tuple
 import unicodedata
 from urllib import parse
 import zipfile
@@ -74,7 +74,7 @@ def sanitize_filepath(filename: str, /, replace_dot=False, replace_folder_sep=Fa
 # =============================================================================
 # File operations
 # _____________________________________________________________________________
-def delete_empty_directories(path: os.PathLike) -> List[str]:
+def delete_empty_directories(path: os.PathLike) -> list[str]:
     """Deletes all empty child folders under a parent folder
     :param path:
     :return: List of deleted folders
@@ -94,7 +94,7 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
 
 
 # _____________________________________________________________________________
-def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (List[str], List[str]):
+def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (list[str], list[str]):
     """Deletes all empty child folders under a parent folder
     Notes:
      - times are UTC
