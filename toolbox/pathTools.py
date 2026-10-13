@@ -132,7 +132,7 @@ def open_files(path: os.PathLike) -> Tuple[str, int]:
         # Iterate over files found in directory
         for filename in filenames:
             path = Path(root, filename).resolve()
-            rel_path_str = str(path.relative_to(path))
+            rel_path_str = str(Path(path.relative_to(path), path.name))
 
             # Test if file is an archive
             if file_suffix(filename) in ['.zip', '.gzip', '.gz']:
