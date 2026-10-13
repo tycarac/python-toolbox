@@ -13,6 +13,7 @@ python -m venv ".\.venv"
 )
 echo Activating virtual environment ...
 call .venv\Scripts\activate
+python.exe --version
 
 REM ___________________________________________________________________________
 REM List Python packages
