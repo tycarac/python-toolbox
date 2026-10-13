@@ -103,3 +103,22 @@ def test_fail_urlpath_to_pathname(given, expected):
 def test_url_suffix(given, expected):
     assert pathTools.url_suffix(given) == expected
 
+
+# _____________________________________________________________________________
+@pytest.mark.parametrize('given, expected', [
+    ('', ''),
+    ('.', ''),
+    ('..\\', ''),
+    ('\\.', ''),
+    ('a.e', '.e'),
+    ('a.b.e.f', '.f'),
+    ('abc.def\\.ext', ''),
+    ('abc.def\\g', ''),
+    ('abc.def\\g.h', '.h'),
+    ('abc.def\\g.hijk', '.hijk'),
+    ('abc.def/.ext', ''),
+    ('abc.def/ghi', ''),
+    ('abc.def/ghi.tar.gzip', '.gzip')
+    ])
+def test_file_suffix(given, expected):
+    assert pathTools.file_suffix(given) == expected
