@@ -43,7 +43,7 @@ def is_parent(parent: str, path: str, /) -> bool:
 # _____________________________________________________________________________
 def sanitize_filepath(filename: str, /, replace_dot=False, replace_folder_sep=False) -> str:
     """Returns MS-Windows sanitized filepath using ASCII character set
-    :param filepath: string
+    :param filename: string
     :param replace_dot: bool
     :param replace_folder_sep: bool
     :return: sanitized filepath
@@ -98,12 +98,19 @@ def delete_empty_directories(path: os.PathLike) -> List[str]:
 # _____________________________________________________________________________
 def delete_empty_old_files(path: os.PathLike, age: timedelta = None, /) -> (List[str], List[str]):
     """Deletes all empty child folders under a parent folder
+    Notes:
+     - times are UTC
     :param path: parent folder
     :param age:
     :param include_empty:
     :return: Tuple of deleted files, deleted folders and errors
     """
-    cutoff = (datetime.now() - age).replace(hour=0, minute=0, second=0).timestamp() if age else None
+    cutoff = None
+    if age:
+        if age.days > 0:
+            cutoff = (datetime.now() - age).replace(hour=0, minute=0, second=0).timestamp()
+        else:
+            cutoff = (datetime.now() - age).timestamp()
 
     deleted_folders, deleted_files, errors = [], [], []
     for parent, dirs, files in os.walk(path, topdown=False):
