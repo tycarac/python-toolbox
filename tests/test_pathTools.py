@@ -21,6 +21,23 @@ def test_sanitize_filename(given, expected):
 
 
 # _____________________________________________________________________________
+@pytest.mark.parametrize('given, expected', [
+    ('.a', '.a'),
+    ('..a', '.a'),
+    ('.a.txt', '.atxt'),
+    ('b', 'b'),
+    ('b.txt', 'btxt'),
+    ('b.bak.txt', 'bbaktxt'),
+    ('No. 11', 'No 11'),
+    ('', ''),
+    ('\t', ''),
+    ('.', '.')
+    ])
+def test_dot_sanitize_filename(given, expected):
+    assert pathTools.sanitize_filename(given, remove_dot=True) == expected
+
+
+# _____________________________________________________________________________
 @pytest.mark.parametrize('parent, path', [
     (Path('c:\\atemp'), Path('c:\\atemp')),
     (Path('c:\\atemp'), Path('c:\\atemp\\abcd')),
