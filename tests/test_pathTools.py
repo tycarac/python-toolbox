@@ -23,18 +23,18 @@ def test_sanitize_filename(given, expected):
 # _____________________________________________________________________________
 @pytest.mark.parametrize('given, expected', [
     ('.a', '.a'),
-    ('..a', '.a'),
-    ('.a.txt', '.atxt'),
+    ('..a', '.-a'),
+    ('.a.txt', '.a-txt'),
     ('b', 'b'),
-    ('b.txt', 'btxt'),
-    ('b.bak.txt', 'bbaktxt'),
-    ('No. 11', 'No 11'),
+    ('b.txt', 'b-txt'),
+    ('b.bak.txt', 'b-bak-txt'),
+    ('No. 11', 'No- 11'),
     ('', ''),
     ('\t', ''),
     ('.', '.')
     ])
 def test_dot_sanitize_filename(given, expected):
-    assert pathTools.sanitize_filename(given, remove_dot=True) == expected
+    assert pathTools.sanitize_filename(given, replace_dot=True) == expected
 
 
 # _____________________________________________________________________________
