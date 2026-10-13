@@ -8,7 +8,7 @@ Notes:
     https://docs.python.org/3/tutorial/floatingpoint.html#tut-fp-issues
 """
 import logging
-import metricPrefix
+from toolbox import metricPrefix
 import pytest
 
 logger = logging.getLogger(__name__)
