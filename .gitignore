@@ -14,6 +14,7 @@ __pycache__/
 *.tmp
 
 # Processing paths
+build/
 cache/
 logs/
 output/
@@ -21,11 +22,11 @@ temp/
 tmp/
 
 # Data
-dataset/
+data/
 
 # Tools
 .idea/
-.vscode
+.vscode/
 .pytest_cache/
 .nox/
 .tox/
